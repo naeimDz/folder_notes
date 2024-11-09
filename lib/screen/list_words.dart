@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../models/word.dart';
+
 class VocabularyList extends StatefulWidget {
   const VocabularyList({super.key});
 
@@ -14,41 +16,18 @@ class _VocabularyListState extends State<VocabularyList> {
 
   final List<String> categories = [
     'All',
-    'Business',
-    'Travel',
-    'Technology',
-    'Academic',
-    'Daily Life',
+    'Grammar',
+    'Conjunctions',
+    'Adverbs',
+    'Transition Words',
+    'Prepositions',
   ];
 
   final List<String> levels = [
     'All',
-    'Beginner',
-    'Intermediate',
-    'Advanced',
-  ];
-
-  final List<Map<String, dynamic>> vocabularyWords = [
-    {
-      'word': 'Accomplish',
-      'translation': 'ينجز',
-      'category': 'Business',
-      'level': 'Intermediate',
-      'example': 'She accomplished all her goals for the quarter.',
-      'dateAdded': '2024-03-15',
-      'tags': ['achievement', 'success'],
-      'mastered': true,
-    },
-    {
-      'word': 'Sustainable',
-      'translation': 'مستدام',
-      'category': 'Technology',
-      'level': 'Advanced',
-      'example': 'The company focuses on sustainable development.',
-      'dateAdded': '2024-03-14',
-      'tags': ['environment', 'business'],
-      'mastered': false,
-    },
+    'Easy',
+    'Medium',
+    'Hard',
   ];
 
   void _addNewWordDialog() {
@@ -96,24 +75,6 @@ class _VocabularyListState extends State<VocabularyList> {
             // Search and Filter Section
             Row(
               children: [
-                // Search Input
-                /* Expanded(
-                  flex: 2,
-                  child: TextField(
-                    onChanged: (value) => setState(() {
-                      searchTerm = value;
-                    }),
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.search),
-                      hintText: 'Search words...',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(width: 8.0),
-*/
                 // Category Dropdown
                 Expanded(
                   child: DropdownButtonFormField<String>(
@@ -128,6 +89,7 @@ class _VocabularyListState extends State<VocabularyList> {
                       );
                     }).toList(),
                     decoration: InputDecoration(
+                      labelText: 'Category',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                       ),
@@ -150,6 +112,7 @@ class _VocabularyListState extends State<VocabularyList> {
                       );
                     }).toList(),
                     decoration: InputDecoration(
+                      labelText: 'Difficulty',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                       ),
@@ -166,6 +129,7 @@ class _VocabularyListState extends State<VocabularyList> {
                 itemCount: vocabularyWords.length,
                 itemBuilder: (context, index) {
                   final word = vocabularyWords[index];
+
                   return Card(
                     elevation: 2,
                     shape: RoundedRectangleBorder(
@@ -177,10 +141,10 @@ class _VocabularyListState extends State<VocabularyList> {
                       title: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(word['word'],
+                          Text(word.word,
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 18)),
-                          Text(word['translation'],
+                          Text(word.translation,
                               style: TextStyle(color: Colors.grey[600])),
                         ],
                       ),
@@ -188,30 +152,41 @@ class _VocabularyListState extends State<VocabularyList> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(height: 8.0),
-                          Text(word['example'],
+                          Text(word.context,
                               style: TextStyle(color: Colors.grey[700])),
                           SizedBox(height: 8.0),
                           Wrap(
                             spacing: 6.0,
                             children: [
                               Chip(
-                                label: Text(word['category']),
+                                label: Text(word.category),
                                 backgroundColor: Colors.blue[100],
                                 labelStyle: TextStyle(color: Colors.blue[800]),
                               ),
                               Chip(
-                                label: Text(word['level']),
+                                label: Text(word.difficulty),
                                 backgroundColor: Colors.purple[100],
                                 labelStyle:
                                     TextStyle(color: Colors.purple[800]),
                               ),
-                              ...word['tags'].map<Widget>((tag) => Chip(
+                              ...word.tags.map((tag) => Chip(
                                     label: Text('#$tag'),
                                     backgroundColor: Colors.grey[200],
                                     labelStyle:
                                         TextStyle(color: Colors.grey[800]),
                                   )),
                             ],
+                          ),
+                          SizedBox(height: 8.0),
+                          LinearProgressIndicator(
+                            value: word.masteryScore,
+                            backgroundColor: Colors.grey[200],
+                            color: Colors.green,
+                          ),
+                          SizedBox(height: 4.0),
+                          Text(
+                            'Mastery: ${(word.masteryScore * 100).toInt()}%',
+                            style: TextStyle(fontSize: 12),
                           ),
                         ],
                       ),
@@ -243,7 +218,3 @@ class _VocabularyListState extends State<VocabularyList> {
     );
   }
 }
-
-void main() => runApp(MaterialApp(
-      home: VocabularyList(),
-    ));

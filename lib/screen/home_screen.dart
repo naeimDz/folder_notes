@@ -35,7 +35,7 @@ class HomeScreen extends StatelessWidget {
               onPressed: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => SpacedRepetitionPractice(),
+                    builder: (context) => AddWordScreen(),
                   )),
               icon: Icon(Icons.add)),
           Switch(
