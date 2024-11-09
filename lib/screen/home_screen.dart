@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:folder_notes/providers/theme_provider.dart';
 import 'package:folder_notes/screen/add_word.dart';
+import 'package:folder_notes/screen/analytics_screen.dart';
 import 'package:folder_notes/screen/list_words.dart';
 import 'package:folder_notes/screen/space_practice.dart';
 import 'package:folder_notes/screen/word_detail.dart';
@@ -11,6 +12,7 @@ class HomeScreen extends StatelessWidget {
   HomeScreen({super.key, required this.title});
 
   final int progress = 65;
+  final int dailyGoal = 80; // Daily goal for progress visualization
   final List<Map<String, String>> todaysWords = [
     {"word": "Resilient", "translation": "مرن", "timeAdded": "2h ago"},
     {"word": "Ambitious", "translation": "طموح", "timeAdded": "3h ago"},
@@ -28,6 +30,7 @@ class HomeScreen extends StatelessWidget {
     final themeProvider = Provider.of<ThemeProvider>(context);
 
     return Scaffold(
+      bottomNavigationBar: _buildBottomNav(),
       appBar: AppBar(
         title: Text(title),
         actions: [
@@ -41,7 +44,6 @@ class HomeScreen extends StatelessWidget {
           Switch(
             value: themeProvider.getThemeMode() == ThemeMode.dark,
             onChanged: (value) {
-              // Toggle theme on switch change
               themeProvider
                   .setThemeMode(value ? ThemeMode.dark : ThemeMode.light);
             },
@@ -51,7 +53,6 @@ class HomeScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
-          // Wrap entire body in SingleChildScrollView
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -59,10 +60,12 @@ class HomeScreen extends StatelessWidget {
                 "Ready to expand your English vocabulary?",
                 style: TextStyle(color: Colors.grey[600]),
               ),
-              SizedBox(height: 16),
-              // Word of the Day Section
+              SizedBox(height: 8),
 
-              // Stats Overview (Horizontal Scrollable)
+              // 1. Enhanced Daily Goal Progress Visualization
+              _buildDailyGoalProgress(context),
+              SizedBox(height: 8),
+              // Stats Overview
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
@@ -81,15 +84,19 @@ class HomeScreen extends StatelessWidget {
               _buildProgressCard(),
               _buildWordsCard(),
               SizedBox(height: 16),
-              _buildWordOfTheDay(context),
+
+              // 2. Enhanced Word of the Day Section
+              _buildEnhancedWordOfTheDay(context),
               SizedBox(height: 16),
+
+              // 3. Interactive Daily Quiz Widget
+              _buildDailyQuizWidget(context),
               // Quick Actions
-              _buildAlertCard(Icons.psychology, "Start Daily Quiz",
-                  "Test your knowledge of recent words"),
+
               _buildAlertCard(Icons.book, "Review Flashcards",
-                  "Practice with your saved words"),
+                  "Practice with your saved words", context),
               _buildAlertCard(Icons.emoji_events, "View Progress",
-                  "Check your learning statistics"),
+                  "Check your learning statistics", context),
             ],
           ),
         ),
@@ -97,30 +104,34 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatCard(
-      String title, String value, IconData icon, BuildContext context) {
-    return InkWell(
+  // New: Daily Goal Progress Widget
+  Widget _buildDailyGoalProgress(BuildContext context) {
+    return GestureDetector(
       onTap: () => Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => VocabularyList(),
+            builder: (context) => AnalyticsScreen(),
           )),
       child: Card(
+        color: Colors.blue[50],
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: TextStyle(color: Colors.grey[500])),
-                  Text(value,
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                ],
+              Text(
+                "Today's Goal Progress",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              Icon(icon, color: Colors.blue, size: 30),
+              SizedBox(height: 10),
+              LinearProgressIndicator(
+                  value: progress / dailyGoal,
+                  backgroundColor: Colors.grey[300]),
+              SizedBox(height: 10),
+              Text(
+                "$progress% of your daily goal achieved!",
+                style: TextStyle(fontSize: 16, color: Colors.blue[600]),
+              ),
             ],
           ),
         ),
@@ -128,6 +139,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
+  // Existing: Progress Card
   Widget _buildProgressCard() {
     return Card(
       child: Padding(
@@ -160,6 +172,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
+  // Existing: Words Card
   Widget _buildWordsCard() {
     return Card(
       child: Padding(
@@ -206,18 +219,8 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAlertCard(IconData icon, String title, String description) {
-    return Card(
-      color: Colors.grey[200],
-      child: ListTile(
-        leading: Icon(icon, color: Colors.blue),
-        title: Text(title),
-        subtitle: Text(description),
-      ),
-    );
-  }
-
-  Widget _buildWordOfTheDay(BuildContext context) {
+  // Enhanced Word of the Day Section
+  Widget _buildEnhancedWordOfTheDay(BuildContext context) {
     return InkWell(
       onTap: () => Navigator.push(
           context,
@@ -255,10 +258,118 @@ class HomeScreen extends StatelessWidget {
                 "Example: She showed a resilient attitude despite the setbacks.",
                 style: TextStyle(fontSize: 16),
               ),
+              SizedBox(height: 16),
+              Text(
+                "Related Words: Durable, Strong",
+                style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+              ),
+              Text(
+                "Synonyms: Tough, Flexible",
+                style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+              ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  // Interactive Daily Quiz Widget
+  Widget _buildDailyQuizWidget(BuildContext context) {
+    return InkWell(
+      onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SpacedRepetitionPractice(),
+          )),
+      child: Card(
+        color: Colors.yellow[50],
+        child: ListTile(
+          leading: Icon(Icons.psychology, color: Colors.blue),
+          title: Text("Start Daily Quiz"),
+          subtitle: Text("Test your knowledge of today's words"),
+          trailing: ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SpacedRepetitionPractice(),
+                  ));
+            },
+            child: Text("Start"),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAlertCard(
+      IconData icon, String title, String description, BuildContext context) {
+    return InkWell(
+      child: Card(
+        color: Colors.grey[200],
+        child: ListTile(
+          leading: Icon(icon, color: Colors.blue),
+          title: Text(title),
+          subtitle: Text(description),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatCard(
+      String title, String value, IconData icon, BuildContext context) {
+    return InkWell(
+      onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VocabularyList(),
+          )),
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: TextStyle(color: Colors.grey[500])),
+                  Text(value,
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                ],
+              ),
+              Icon(icon, color: Colors.blue, size: 30),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBottomNav() {
+    return BottomNavigationBar(
+      currentIndex: 0,
+      items: const [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home),
+          label: 'Home',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.book),
+          label: 'Dictionary',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.psychology),
+          label: 'Practice',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.person),
+          label: 'Profile',
+        ),
+      ],
+      type: BottomNavigationBarType.fixed,
     );
   }
 }
