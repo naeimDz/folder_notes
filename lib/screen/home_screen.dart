@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:folder_notes/providers/theme_provider.dart';
 import 'package:folder_notes/screen/add_word.dart';
 import 'package:folder_notes/screen/list_words.dart';
+import 'package:folder_notes/screen/space_practice.dart';
 import 'package:folder_notes/screen/word_detail.dart';
 import 'package:provider/provider.dart';
 
@@ -34,7 +35,7 @@ class HomeScreen extends StatelessWidget {
               onPressed: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => AddWordScreen(),
+                    builder: (context) => SpacedRepetitionPractice(),
                   )),
               icon: Icon(Icons.add)),
           Switch(
