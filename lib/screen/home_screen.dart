@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:folder_notes/providers/theme_provider.dart';
+import 'package:folder_notes/screen/list_words.dart';
+import 'package:folder_notes/screen/word_detail.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -27,6 +29,13 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(title),
         actions: [
+          /*IconButton(
+              onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => VocabularyList(),
+                  )),
+              icon: Icon(Icons.add)),*/
           Switch(
             value: themeProvider.getThemeMode() == ThemeMode.dark,
             onChanged: (value) {
@@ -56,11 +65,11 @@ class HomeScreen extends StatelessWidget {
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
-                    _buildStatCard("Words Learned", "248", Icons.book),
+                    _buildStatCard("Words Learned", "248", Icons.book, context),
+                    _buildStatCard("Current Streak", "7 days",
+                        Icons.emoji_events, context),
                     _buildStatCard(
-                        "Current Streak", "7 days", Icons.emoji_events),
-                    _buildStatCard(
-                        "Mastery Level", "Advanced", Icons.psychology),
+                        "Mastery Level", "Advanced", Icons.psychology, context),
                   ],
                 ),
               ),
@@ -70,7 +79,7 @@ class HomeScreen extends StatelessWidget {
               _buildProgressCard(),
               _buildWordsCard(),
               SizedBox(height: 16),
-              _buildWordOfTheDay(),
+              _buildWordOfTheDay(context),
               SizedBox(height: 16),
               // Quick Actions
               _buildAlertCard(Icons.psychology, "Start Daily Quiz",
@@ -86,24 +95,32 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatCard(String title, String value, IconData icon) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: TextStyle(color: Colors.grey[500])),
-                Text(value,
-                    style:
-                        TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-              ],
-            ),
-            Icon(icon, color: Colors.blue, size: 30),
-          ],
+  Widget _buildStatCard(
+      String title, String value, IconData icon, BuildContext context) {
+    return InkWell(
+      onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VocabularyList(),
+          )),
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: TextStyle(color: Colors.grey[500])),
+                  Text(value,
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                ],
+              ),
+              Icon(icon, color: Colors.blue, size: 30),
+            ],
+          ),
         ),
       ),
     );
@@ -198,39 +215,46 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildWordOfTheDay() {
-    return Card(
-      elevation: 4,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Word of the Day",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            Text(
-              "Resilient",
-              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            Text(
-              "Pronunciation: /rɪˈzɪlɪənt/",
-              style: TextStyle(color: Colors.grey[600]),
-            ),
-            SizedBox(height: 10),
-            Text(
-              "Meaning: Able to recover quickly from difficult conditions.",
-              style: TextStyle(fontSize: 16),
-            ),
-            SizedBox(height: 10),
-            Text(
-              "Example: She showed a resilient attitude despite the setbacks.",
-              style: TextStyle(fontSize: 16),
-            ),
-          ],
+  Widget _buildWordOfTheDay(BuildContext context) {
+    return InkWell(
+      onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => WordDetailScreen(),
+          )),
+      child: Card(
+        elevation: 4,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Word of the Day",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 10),
+              Text(
+                "Resilient",
+                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 10),
+              Text(
+                "Pronunciation: /rɪˈzɪlɪənt/",
+                style: TextStyle(color: Colors.grey[600]),
+              ),
+              SizedBox(height: 10),
+              Text(
+                "Meaning: Able to recover quickly from difficult conditions.",
+                style: TextStyle(fontSize: 16),
+              ),
+              SizedBox(height: 10),
+              Text(
+                "Example: She showed a resilient attitude despite the setbacks.",
+                style: TextStyle(fontSize: 16),
+              ),
+            ],
+          ),
         ),
       ),
     );
