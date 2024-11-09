@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.kudldz.naiem.ambit" "\0"
-            VALUE "FileDescription", "flutter_starter_template" "\0"
+            VALUE "FileDescription", "folder_notes" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "flutter_starter_template" "\0"
+            VALUE "InternalName", "folder_notes" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2024 com.kudldz.naiem.ambit. All rights reserved." "\0"
-            VALUE "OriginalFilename", "flutter_starter_template.exe" "\0"
-            VALUE "ProductName", "flutter_starter_template" "\0"
+            VALUE "OriginalFilename", "folder_notes.exe" "\0"
+            VALUE "ProductName", "folder_notes" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

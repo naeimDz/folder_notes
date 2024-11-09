@@ -1,4 +1,4 @@
-# flutter_starter_template
+# folder_notes
 
 #Project Overview
 The Flutter Starter Template Boilerplate is designed to provide a robust foundation for any Flutter project. It includes essential tools, libraries, and best practices for building scalable, maintainable applications. This boilerplate integrates core Flutter packages like Provider for state management, Firebase for backend services, and SharedPreferences for caching, along with support for localization via easy_localization and the MVC (Model-View-Controller) architectural pattern.

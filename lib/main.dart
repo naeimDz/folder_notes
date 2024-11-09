@@ -1,8 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_starter_template/core/app_theme.dart';
-import 'package:flutter_starter_template/core/routes/routes.dart';
-import 'package:flutter_starter_template/providers/theme_provider.dart';
+import 'package:folder_notes/core/app_theme.dart';
+import 'package:folder_notes/core/routes/routes.dart';
+import 'package:folder_notes/providers/theme_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_starter_template/screen/home_screen.dart';
+import 'package:folder_notes/screen/home_screen.dart';
 
 class AppRoutes {
   static final navigatorKey = GlobalKey<NavigatorState>();
