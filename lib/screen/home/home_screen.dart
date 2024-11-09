@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:folder_notes/providers/theme_provider.dart';
 import 'package:folder_notes/screen/advanced_features/analytics_screen.dart';
-import 'package:folder_notes/screen/vocabulary_list/list_words.dart';
 import 'package:folder_notes/screen/advanced_features/space_practice.dart';
 import 'package:folder_notes/screen/word_detail/word_detail.dart';
 import 'package:provider/provider.dart';
@@ -324,7 +323,7 @@ class HomeScreen extends StatelessWidget {
       onTap: () => Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => VocabularyList(),
+            builder: (context) => VocabularyListScreen(),
           )),
       child: Card(
         child: Padding(

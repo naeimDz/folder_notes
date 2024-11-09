@@ -24,6 +24,9 @@ class VocabularyListScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    IconButton(
+                        onPressed: () => Navigator.pop(context),
+                        icon: Icon(Icons.arrow_back)),
                     // Top Row with Title and Actions
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
