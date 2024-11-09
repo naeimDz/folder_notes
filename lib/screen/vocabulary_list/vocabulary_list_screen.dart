@@ -1,371 +1,266 @@
 // models/vocabulary_word.dart
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
-
-import '../../models/word.dart';
 import '../../models/word_card_config.dart';
 import '../../providers/vocabulary_provider.dart';
-
-class WordCard extends StatelessWidget {
-  final Word word;
-  final Function(String) onFavoriteToggle;
-  final Function(String)? onDelete;
-  final Function(String)? onShare;
-  final Function(String)? onEdit;
-  final WordCardConfig config;
-  final double? maxWidth;
-
-  const WordCard({
-    super.key,
-    required this.word,
-    required this.onFavoriteToggle,
-    this.onDelete,
-    this.onShare,
-    this.onEdit,
-    this.config = const WordCardConfig(),
-    this.maxWidth,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final screenWidth = MediaQuery.of(context).size.width;
-    final isSmallScreen = screenWidth < 600;
-
-    Widget cardContent = Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildHeader(context, isSmallScreen),
-          if (config.showDefinition) ...[
-            const SizedBox(height: 12),
-            _buildDefinition(theme),
-          ],
-          if (config.showMasteryScore) ...[
-            const SizedBox(height: 12),
-            _buildMasteryIndicator(),
-          ],
-          if (config.showTags && word.tags.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            _buildTags(),
-          ],
-        ],
-      ),
-    );
-
-    if (config.enableSlideActions) {
-      cardContent = Slidable(
-        key: ValueKey(word.id),
-        endActionPane: ActionPane(
-          motion: const ScrollMotion(),
-          children: [
-            if (onEdit != null)
-              SlidableAction(
-                onPressed: (_) => onEdit!(word.id as String),
-                backgroundColor: Colors.blue,
-                foregroundColor: Colors.white,
-                icon: Icons.edit,
-                label: 'Edit',
-              ),
-            if (onShare != null)
-              SlidableAction(
-                onPressed: (_) => onShare!(word.id as String),
-                backgroundColor: Colors.green,
-                foregroundColor: Colors.white,
-                icon: Icons.share,
-                label: 'Share',
-              ),
-            if (onDelete != null)
-              SlidableAction(
-                onPressed: (_) => onDelete!(word.id as String),
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
-                icon: Icons.delete,
-                label: 'Delete',
-              ),
-          ],
-        ),
-        child: cardContent,
-      );
-    }
-
-    return Container(
-      constraints: BoxConstraints(
-        maxWidth: maxWidth ?? double.infinity,
-      ),
-      child: Card(
-        elevation: 2,
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: () =>
-                Navigator.pushNamed(context, '/word-details', arguments: word),
-            child: Hero(
-              tag: 'word-${word.id}',
-              child: cardContent,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHeader(BuildContext context, bool isSmallScreen) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          child: isSmallScreen
-              ? Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      word.word,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
-                    if (config.showTranslation) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        word.translation,
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  color: Colors.grey[600],
-                                ),
-                      ),
-                    ],
-                  ],
-                )
-              : Row(
-                  children: [
-                    Text(
-                      word.word,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
-                    if (config.showTranslation) ...[
-                      const SizedBox(width: 16),
-                      Text(
-                        word.translation,
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  color: Colors.grey[600],
-                                ),
-                      ),
-                    ],
-                  ],
-                ),
-        ),
-        _buildFavoriteButton(),
-      ],
-    );
-  }
-
-  Widget _buildFavoriteButton() {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        customBorder: const CircleBorder(),
-        onTap: () => onFavoriteToggle(word.id as String),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: word.isFavorite
-                ? Colors.amber.withOpacity(0.2)
-                : Colors.transparent,
-          ),
-          child: Icon(
-            word.isFavorite ? Icons.star_rounded : Icons.star_outline_rounded,
-            color: word.isFavorite ? Colors.amber : Colors.grey,
-            size: 28,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDefinition(ThemeData theme) {
-    return Text(
-      word.definition,
-      style: theme.textTheme.bodyMedium?.copyWith(
-        color: Colors.grey[600],
-        fontStyle: FontStyle.italic,
-      ),
-    );
-  }
-
-  Widget _buildMasteryIndicator() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Mastery: ${word.masteryScore.toStringAsFixed(0)}%',
-          style: const TextStyle(fontSize: 12, color: Colors.grey),
-        ),
-        const SizedBox(height: 4),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(4),
-          child: LinearProgressIndicator(
-            value: word.masteryScore / 100,
-            backgroundColor: Colors.grey[200],
-            valueColor: AlwaysStoppedAnimation<Color>(
-              HSLColor.fromAHSL(
-                1.0,
-                120 * (word.masteryScore / 100),
-                0.8,
-                0.4,
-              ).toColor(),
-            ),
-            minHeight: 6,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTags() {
-    return Wrap(
-      spacing: 4,
-      runSpacing: 4,
-      children: word.tags.map((tag) => _buildTag(tag)).toList(),
-    );
-  }
-
-  Widget _buildTag(String tag) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: Colors.grey[200],
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Text(
-        tag,
-        style: const TextStyle(
-          fontSize: 12,
-          color: Colors.grey,
-        ),
-      ),
-    );
-  }
-}
+import 'word_card.dart';
 
 class VocabularyListScreen extends StatelessWidget {
   const VocabularyListScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('My Vocabulary'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.sort),
-            onPressed: () {
-              // Show sorting options
-              _showSortingOptions(context);
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.filter_list),
-            onPressed: () {
-              // Show filter options
-              _showFilterOptions(context);
-            },
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          _buildSearchBar(context),
-          _buildCategoryFilter(context),
-          Expanded(
-            child: Consumer<VocabularyProvider>(
-              builder: (context, provider, child) {
-                final words = provider.filteredWords;
+    final theme = Theme.of(context);
 
-                if (words.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+    return Scaffold(
+      backgroundColor: theme.colorScheme.surface,
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            // Modern Header Section
+            SliverToBoxAdapter(
+              child: Container(
+                padding: EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Top Row with Title and Actions
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Icon(
-                          Icons.search_off,
-                          size: 64,
-                          color: Colors.grey,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'My Vocabulary',
+                              style: theme.textTheme.headlineMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: theme.colorScheme.onSurface,
+                              ),
+                            ),
+                            Consumer<VocabularyProvider>(
+                              builder: (context, provider, _) => Text(
+                                '${provider.filteredWords.length} words',
+                                style: theme.textTheme.bodyLarge?.copyWith(
+                                  color: theme.colorScheme.onSurface
+                                      .withOpacity(0.6),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                        SizedBox(height: 16),
-                        Text(
-                          'No words found',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.grey,
-                          ),
+                        Row(
+                          children: [
+                            _buildHeaderButton(
+                              context,
+                              icon: Icons.workspace_premium,
+                              label: 'Progress',
+                              onTap: () {
+                                // Navigate to progress/stats screen
+                                Navigator.pushNamed(context, '/progress');
+                              },
+                            ),
+                            SizedBox(width: 12),
+                            _buildHeaderButton(
+                              context,
+                              icon: Icons.more_horiz,
+                              label: 'More',
+                              onTap: () => _showMoreOptions(context),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                  );
-                }
+                    SizedBox(height: 24),
 
-                return ListView.builder(
-                  itemCount: words.length,
-                  itemBuilder: (context, index) {
-                    return WordCard(
-                      word: words[index],
-                      config: WordCardConfig(
-                        showDefinition: true,
-                        showTranslation: true,
-                        showMasteryScore: true,
-                        showTags: true,
-                        enableSlideActions: true,
+                    // Modern Search Bar
+                    Container(
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.surface,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 10,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
                       ),
-                      maxWidth: 600,
-                      onFavoriteToggle: (String) {},
-                    );
-                  },
-                );
-              },
+                      child: TextField(
+                        onChanged: (value) {
+                          context
+                              .read<VocabularyProvider>()
+                              .setSearchQuery(value);
+                        },
+                        decoration: InputDecoration(
+                          hintText: 'Search your vocabulary...',
+                          prefixIcon: Icon(
+                            Icons.search,
+                            color: theme.colorScheme.onSurface.withOpacity(0.5),
+                          ),
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 16),
+
+                    // Filter Pills
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          _buildFilterPill(
+                            context,
+                            icon: Icons.sort,
+                            label: 'Sort',
+                            onTap: () => _showSortingOptions(context),
+                          ),
+                          SizedBox(width: 8),
+                          _buildFilterPill(
+                            context,
+                            icon: Icons.filter_list,
+                            label: 'Filter',
+                            onTap: () => _showFilterOptions(context),
+                          ),
+                          SizedBox(width: 8),
+                          ..._buildCategoryPills(context),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
-        ],
+
+            // Words List
+            SliverPadding(
+              padding: EdgeInsets.symmetric(horizontal: 6),
+              sliver: Consumer<VocabularyProvider>(
+                builder: (context, provider, child) {
+                  final words = provider.filteredWords;
+
+                  if (words.isEmpty) {
+                    return SliverFillRemaining(
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.search_off,
+                              size: 64,
+                              color:
+                                  theme.colorScheme.onSurface.withOpacity(0.3),
+                            ),
+                            SizedBox(height: 16),
+                            Text(
+                              'No words found',
+                              style: theme.textTheme.titleLarge?.copyWith(
+                                color: theme.colorScheme.onSurface
+                                    .withOpacity(0.3),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+
+                  return SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        return Padding(
+                          padding: EdgeInsets.only(bottom: 12),
+                          child: WordCard(
+                            word: words[index],
+                            config: WordCardConfig(
+                              showDefinition: true,
+                              showTranslation: true,
+                              showMasteryScore: true,
+                              showTags: true,
+                              enableSlideActions: true,
+                            ),
+                            maxWidth: 600,
+                            onFavoriteToggle: (String) {},
+                          ),
+                        );
+                      },
+                      childCount: words.length,
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Navigate to add word screen
-          Navigator.pushNamed(context, '/add-word');
-        },
-        child: Icon(Icons.add),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => Navigator.pushNamed(context, '/add-word'),
+        icon: Icon(Icons.add),
+        label: Text('Add Word'),
+        elevation: 4,
       ),
     );
   }
 
-  Widget _buildSearchBar(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: TextField(
-        onChanged: (value) {
-          context.read<VocabularyProvider>().setSearchQuery(value);
-        },
-        decoration: InputDecoration(
-          hintText: 'Search words...',
-          prefixIcon: Icon(Icons.search),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
+  Widget _buildHeaderButton(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: onTap,
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+          child: Column(
+            children: [
+              Icon(icon, size: 24),
+              SizedBox(height: 4),
+              Text(label, style: Theme.of(context).textTheme.bodySmall),
+            ],
           ),
-          filled: true,
-          fillColor: Colors.grey[100],
         ),
       ),
     );
   }
 
-  Widget _buildCategoryFilter(BuildContext context) {
+  Widget _buildFilterPill(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    final theme = Theme.of(context);
+
+    return Material(
+      color: theme.colorScheme.surface,
+      borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: onTap,
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 18),
+              SizedBox(width: 8),
+              Text(label),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _buildCategoryPills(BuildContext context) {
     final categories = [
       'All',
       'Business',
@@ -373,27 +268,90 @@ class VocabularyListScreen extends StatelessWidget {
       'Daily Life',
       'Technology'
     ];
+    final theme = Theme.of(context);
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: EdgeInsets.symmetric(horizontal: 8),
-      child: Row(
-        children: categories.map((category) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: FilterChip(
-              label: Text(category),
-              selected: context.watch<VocabularyProvider>().selectedCategory ==
-                  category,
-              onSelected: (selected) {
-                if (selected) {
-                  context.read<VocabularyProvider>().setCategory(category);
-                }
-              },
-            ),
-          );
-        }).toList(),
+    return categories.map((category) {
+      final isSelected =
+          context.watch<VocabularyProvider>().selectedCategory == category;
+
+      return Padding(
+        padding: EdgeInsets.only(right: 8),
+        child: FilterChip(
+          label: Text(category),
+          selected: isSelected,
+          onSelected: (selected) {
+            if (selected) {
+              context.read<VocabularyProvider>().setCategory(category);
+            }
+          },
+          selectedColor: theme.colorScheme.primary.withOpacity(0.2),
+          checkmarkColor: theme.colorScheme.primary,
+          labelStyle: TextStyle(
+            color: isSelected
+                ? theme.colorScheme.primary
+                : theme.colorScheme.onSurface,
+          ),
+        ),
+      );
+    }).toList();
+  }
+
+  void _showMoreOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
+      builder: (context) => Container(
+        padding: EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'More Options',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            SizedBox(height: 24),
+            _buildMoreOption(
+              context,
+              icon: Icons.settings,
+              title: 'Settings',
+              subtitle: 'Customize your learning experience',
+              onTap: () => Navigator.pushNamed(context, '/settings'),
+            ),
+            _buildMoreOption(
+              context,
+              icon: Icons.backup,
+              title: 'Backup & Sync',
+              subtitle: 'Manage your vocabulary data',
+              onTap: () => Navigator.pushNamed(context, '/backup'),
+            ),
+            _buildMoreOption(
+              context,
+              icon: Icons.help_outline,
+              title: 'Help & Feedback',
+              subtitle: 'Get support or share your thoughts',
+              onTap: () => Navigator.pushNamed(context, '/help'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMoreOption(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(title),
+      subtitle: Text(subtitle),
+      trailing: Icon(Icons.chevron_right),
+      onTap: onTap,
     );
   }
 

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:folder_notes/providers/theme_provider.dart';
-import 'package:folder_notes/screen/add_word/add_word.dart';
 import 'package:folder_notes/screen/advanced_features/analytics_screen.dart';
 import 'package:folder_notes/screen/vocabulary_list/list_words.dart';
 import 'package:folder_notes/screen/advanced_features/space_practice.dart';
