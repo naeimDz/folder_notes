@@ -12,10 +12,9 @@ class AppRoutes {
     switch (settings.name) {
       case initial:
         return MaterialPageRoute(
-            builder: (_) => const HomeScreen(title: 'Splash Screen'));
+            builder: (_) => HomeScreen(title: 'مرحباً، Ahmad!'));
       case home:
-        return MaterialPageRoute(
-            builder: (_) => const HomeScreen(title: 'Home Screen'));
+        return MaterialPageRoute(builder: (_) => HomeScreen(title: 'مرحباً،'));
 
       default:
         return MaterialPageRoute(
