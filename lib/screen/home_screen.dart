@@ -49,6 +49,7 @@ class HomeScreen extends StatelessWidget {
                 style: TextStyle(color: Colors.grey[600]),
               ),
               SizedBox(height: 16),
+              // Word of the Day Section
 
               // Stats Overview (Horizontal Scrollable)
               SingleChildScrollView(
@@ -69,7 +70,8 @@ class HomeScreen extends StatelessWidget {
               _buildProgressCard(),
               _buildWordsCard(),
               SizedBox(height: 16),
-
+              _buildWordOfTheDay(),
+              SizedBox(height: 16),
               // Quick Actions
               _buildAlertCard(Icons.psychology, "Start Daily Quiz",
                   "Test your knowledge of recent words"),
@@ -192,6 +194,44 @@ class HomeScreen extends StatelessWidget {
         leading: Icon(icon, color: Colors.blue),
         title: Text(title),
         subtitle: Text(description),
+      ),
+    );
+  }
+
+  Widget _buildWordOfTheDay() {
+    return Card(
+      elevation: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Word of the Day",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 10),
+            Text(
+              "Resilient",
+              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 10),
+            Text(
+              "Pronunciation: /rɪˈzɪlɪənt/",
+              style: TextStyle(color: Colors.grey[600]),
+            ),
+            SizedBox(height: 10),
+            Text(
+              "Meaning: Able to recover quickly from difficult conditions.",
+              style: TextStyle(fontSize: 16),
+            ),
+            SizedBox(height: 10),
+            Text(
+              "Example: She showed a resilient attitude despite the setbacks.",
+              style: TextStyle(fontSize: 16),
+            ),
+          ],
+        ),
       ),
     );
   }
