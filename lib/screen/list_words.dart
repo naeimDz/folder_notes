@@ -97,7 +97,7 @@ class _VocabularyListState extends State<VocabularyList> {
             Row(
               children: [
                 // Search Input
-                Expanded(
+                /* Expanded(
                   flex: 2,
                   child: TextField(
                     onChanged: (value) => setState(() {
@@ -113,7 +113,7 @@ class _VocabularyListState extends State<VocabularyList> {
                   ),
                 ),
                 SizedBox(width: 8.0),
-
+*/
                 // Category Dropdown
                 Expanded(
                   child: DropdownButtonFormField<String>(
