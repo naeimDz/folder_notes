@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:folder_notes/providers/theme_provider.dart';
-import 'package:folder_notes/screen/add_word.dart';
-import 'package:folder_notes/screen/analytics_screen.dart';
-import 'package:folder_notes/screen/list_words.dart';
-import 'package:folder_notes/screen/space_practice.dart';
-import 'package:folder_notes/screen/word_detail.dart';
+import 'package:folder_notes/screen/add_word/add_word.dart';
+import 'package:folder_notes/screen/advanced_features/analytics_screen.dart';
+import 'package:folder_notes/screen/vocabulary_list/list_words.dart';
+import 'package:folder_notes/screen/advanced_features/space_practice.dart';
+import 'package:folder_notes/screen/word_detail/word_detail.dart';
 import 'package:provider/provider.dart';
+
+import '../vocabulary_list/vocabulary_list_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   final String title;
@@ -38,7 +40,7 @@ class HomeScreen extends StatelessWidget {
               onPressed: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => AddWordScreen(),
+                    builder: (context) => VocabularyListScreen(),
                   )),
               icon: Icon(Icons.add)),
           Switch(

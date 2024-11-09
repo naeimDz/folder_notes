@@ -5,6 +5,7 @@ import 'package:folder_notes/core/routes/routes.dart';
 import 'package:folder_notes/providers/theme_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'providers/vocabulary_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,6 +25,7 @@ void main() async {
       fallbackLocale: const Locale('en'),
       child: MultiProvider(
         providers: [
+          ChangeNotifierProvider(create: (_) => VocabularyProvider()),
           Provider<SharedPreferences>.value(value: prefs),
           ChangeNotifierProvider<ThemeProvider>(
             create: (context) => ThemeProvider(prefs: prefs),

@@ -5,7 +5,7 @@ class Word {
   final String definition;
   final List<Definition>
       definitions; // List of different definitions and usages of the word
-
+  final bool isFavorite;
   final String context;
   final String lastReviewed;
   final String difficulty;
@@ -43,6 +43,7 @@ class Word {
     required this.synonyms,
     required this.tags,
     required this.category,
+    this.isFavorite = false,
     this.collocations = const [],
     this.masteryScore = 0.0,
     this.usageFrequency = '',
