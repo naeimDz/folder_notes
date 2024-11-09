@@ -5,6 +5,7 @@ import 'package:folder_notes/screen/advanced_features/space_practice.dart';
 import 'package:folder_notes/screen/word_detail/word_detail.dart';
 import 'package:provider/provider.dart';
 
+import '../advanced_features/categories_screen.dart';
 import '../vocabulary_list/vocabulary_list_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -38,7 +39,7 @@ class HomeScreen extends StatelessWidget {
               onPressed: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => VocabularyListScreen(),
+                    builder: (context) => CategoriesScreen(),
                   )),
               icon: Icon(Icons.add)),
           Switch(
