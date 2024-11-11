@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import '../models/word.dart';
+import '../word.dart';
 
 class VocabularyProvider with ChangeNotifier {
   final List<Word> _words = practiceWords;

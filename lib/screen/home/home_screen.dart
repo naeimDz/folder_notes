@@ -106,20 +106,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   MaterialPageRoute(builder: (context) => CategoriesScreen()),
                 ),
               ),
-              IconButton(
-                icon: Icon(
-                  themeProvider.getThemeMode() == ThemeMode.dark
-                      ? Icons.light_mode
-                      : Icons.dark_mode,
-                ),
-                onPressed: () {
-                  themeProvider.setThemeMode(
-                    themeProvider.getThemeMode() == ThemeMode.dark
-                        ? ThemeMode.light
-                        : ThemeMode.dark,
-                  );
-                },
-              ),
             ],
           ),
           SliverToBoxAdapter(
@@ -153,24 +139,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildWelcomeHeader() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Good Morning!",
-          style: TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-          ),
+    return Padding(
+      padding: const EdgeInsets.only(top: 16, left: 12, right: 12),
+      child: Text(
+        "Ready to expand your vocabulary?",
+        style: TextStyle(
+          fontSize: 16,
+          color: Colors.grey[600],
         ),
-        Text(
-          "Ready to expand your vocabulary?",
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.grey[600],
-          ),
-        ),
-      ],
+      ),
     );
   }
 

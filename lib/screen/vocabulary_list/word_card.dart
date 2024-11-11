@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:folder_notes/models/word_card_config.dart';
 
-import '../../models/word.dart';
+import '../../word.dart';
 
 class WordCard extends StatelessWidget {
   final Word word;

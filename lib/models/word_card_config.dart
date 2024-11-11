@@ -8,7 +8,7 @@ class WordCardConfig {
   const WordCardConfig({
     this.showDefinition = true,
     this.showTranslation = true,
-    this.showMasteryScore = true,
+    this.showMasteryScore = false,
     this.showTags = true,
     this.enableSlideActions = true,
   });
