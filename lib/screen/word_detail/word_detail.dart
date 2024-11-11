@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:math' as math;
-
+import 'package:folder_notes/screen/shared/widgets/custom_sliver_app_bar.dart';
 import 'package:folder_notes/screen/word_detail/word.dart';
 
 class WordDetailScreen extends StatefulWidget {
@@ -130,50 +129,8 @@ class _WordDetailScreenState extends State<WordDetailScreen>
       backgroundColor: Colors.grey[100],
       body: CustomScrollView(
         slivers: [
-          SliverAppBar(
-            expandedHeight: 200,
-            floating: false,
-            pinned: true,
-            flexibleSpace: FlexibleSpaceBar(
-              title: Text(
-                wordData["word"] as String,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              background: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topRight,
-                    end: Alignment.bottomLeft,
-                    colors: [
-                      Colors.blue[700]!,
-                      Colors.blue[900]!,
-                    ],
-                  ),
-                ),
-                child: Stack(
-                  children: [
-                    Positioned(
-                      right: -50,
-                      top: -50,
-                      child: Transform.rotate(
-                        angle: -math.pi / 4,
-                        child: Container(
-                          width: 200,
-                          height: 200,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+          CustomSliverAppBar(
+            title: wordData["word"] as String,
             actions: [
               IconButton(
                 icon: AnimatedBuilder(

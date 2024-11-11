@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:folder_notes/screen/shared/widgets/custom_sliver_app_bar.dart';
 import 'package:provider/provider.dart';
 import '../../providers/theme_provider.dart';
 import '../advanced_features/analytics_screen.dart';
@@ -10,7 +11,7 @@ import 'dart:ui' as ui;
 
 class HomeScreen extends StatefulWidget {
   final String title;
-  HomeScreen({super.key, required this.title});
+  const HomeScreen({super.key, required this.title});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -95,7 +96,32 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          _buildSliverAppBar(themeProvider, context),
+          CustomSliverAppBar(
+            title: widget.title,
+            actions: [
+              IconButton(
+                icon: Icon(Icons.add),
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CategoriesScreen()),
+                ),
+              ),
+              IconButton(
+                icon: Icon(
+                  themeProvider.getThemeMode() == ThemeMode.dark
+                      ? Icons.light_mode
+                      : Icons.dark_mode,
+                ),
+                onPressed: () {
+                  themeProvider.setThemeMode(
+                    themeProvider.getThemeMode() == ThemeMode.dark
+                        ? ThemeMode.light
+                        : ThemeMode.dark,
+                  );
+                },
+              ),
+            ],
+          ),
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -123,61 +149,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ],
       ),
       bottomNavigationBar: _buildGlassBottomNav(isDark),
-    );
-  }
-
-  Widget _buildSliverAppBar(ThemeProvider themeProvider, BuildContext context) {
-    return SliverAppBar(
-      expandedHeight: 120.0,
-      floating: false,
-      pinned: true,
-      stretch: true,
-      flexibleSpace: FlexibleSpaceBar(
-        title: Text(
-          widget.title,
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: themeProvider.getThemeMode() == ThemeMode.dark
-                ? Colors.white
-                : Colors.black,
-          ),
-        ),
-        background: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: themeProvider.getThemeMode() == ThemeMode.dark
-                  ? [Colors.grey[900]!, Colors.grey[800]!]
-                  : [Colors.blue[100]!, Colors.blue[50]!],
-            ),
-          ),
-        ),
-      ),
-      actions: [
-        IconButton(
-          icon: Icon(Icons.add),
-          onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => CategoriesScreen()),
-          ),
-        ),
-        IconButton(
-          icon: Icon(
-            themeProvider.getThemeMode() == ThemeMode.dark
-                ? Icons.light_mode
-                : Icons.dark_mode,
-          ),
-          onPressed: () {
-            themeProvider.setThemeMode(
-              themeProvider.getThemeMode() == ThemeMode.dark
-                  ? ThemeMode.light
-                  : ThemeMode.dark,
-            );
-          },
-        ),
-      ],
     );
   }
 
@@ -505,7 +476,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
         ),
         SizedBox(height: 16),
-        ...todaysWords.map((word) => _buildWordCard(word, isDark)).toList(),
+        ...todaysWords.map((word) => _buildWordCard(word, isDark)),
       ],
     );
   }
@@ -706,7 +677,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               ],
             ),
           );
-        }).toList(),
+        }),
       ],
     );
   }

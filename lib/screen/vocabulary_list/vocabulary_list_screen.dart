@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:folder_notes/screen/shared/widgets/custom_sliver_app_bar.dart';
 import 'package:provider/provider.dart';
 import '../../models/word_card_config.dart';
 import '../../providers/vocabulary_provider.dart';
@@ -51,7 +52,21 @@ class _VocabularyListScreenState extends State<VocabularyListScreen>
           CustomScrollView(
             controller: _scrollController,
             slivers: [
-              _buildSliverAppBar(context),
+              CustomSliverAppBar(
+                title: "My Vocabulary",
+                actions: [
+                  IconButton(
+                    icon: Icon(Icons.analytics_outlined),
+                    onPressed: () => Navigator.pushNamed(context, '/progress'),
+                    color: Theme.of(context).iconTheme.color,
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.more_vert),
+                    onPressed: () => _showMoreOptions(context),
+                    color: Theme.of(context).iconTheme.color,
+                  ),
+                ],
+              ),
               SliverToBoxAdapter(
                 child: Column(
                   children: [
@@ -84,53 +99,6 @@ class _VocabularyListScreenState extends State<VocabularyListScreen>
         ],
       ),
       floatingActionButton: _buildFloatingActionButton(context),
-    );
-  }
-
-  Widget _buildSliverAppBar(BuildContext context) {
-    return SliverAppBar(
-      expandedHeight: 140.0,
-      floating: false,
-      pinned: true,
-      stretch: true,
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      flexibleSpace: FlexibleSpaceBar(
-        title: Text(
-          'My Vocabulary',
-          style: TextStyle(
-            color: Theme.of(context).textTheme.headlineMedium?.color,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        background: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Colors.blue[200]!.withOpacity(0.7),
-                Colors.white,
-              ],
-            ),
-          ),
-        ),
-      ),
-      leading: IconButton(
-        icon: Icon(Icons.arrow_back, color: Theme.of(context).iconTheme.color),
-        onPressed: () => Navigator.pop(context),
-      ),
-      actions: [
-        IconButton(
-          icon: Icon(Icons.analytics_outlined),
-          onPressed: () => Navigator.pushNamed(context, '/progress'),
-          color: Theme.of(context).iconTheme.color,
-        ),
-        IconButton(
-          icon: Icon(Icons.more_vert),
-          onPressed: () => _showMoreOptions(context),
-          color: Theme.of(context).iconTheme.color,
-        ),
-      ],
     );
   }
 
@@ -236,75 +204,6 @@ class _VocabularyListScreenState extends State<VocabularyListScreen>
         ),
         elevation: 0,
         pressElevation: 2,
-      ),
-    );
-  }
-
-  Widget _buildVocabularyStats(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _buildStatItem(
-            context: context,
-            value: '248',
-            label: 'Total Words',
-            icon: Icons.book,
-            color: Colors.blue,
-          ),
-          _buildStatItem(
-            context: context,
-            value: '85%',
-            label: 'Mastery',
-            icon: Icons.school,
-            color: Colors.green,
-          ),
-          _buildStatItem(
-            context: context,
-            value: '12',
-            label: 'To Review',
-            icon: Icons.refresh,
-            color: Colors.orange,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatItem({
-    required BuildContext context,
-    required String value,
-    required String label,
-    required IconData icon,
-    required Color color,
-  }) {
-    return Container(
-      padding: EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        children: [
-          Icon(icon, color: color, size: 24),
-          SizedBox(height: 4),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
-          ),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey[600],
-            ),
-          ),
-        ],
       ),
     );
   }
