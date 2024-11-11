@@ -7,6 +7,7 @@ import 'package:my_lab/providers/theme_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'core/helper/test_data_migration.dart';
 import 'providers/word_provider.dart';
 
 void main() async {
