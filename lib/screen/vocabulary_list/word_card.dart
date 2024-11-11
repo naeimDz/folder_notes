@@ -10,6 +10,8 @@ class WordCard extends StatelessWidget {
   final Function(String)? onDelete;
   final Function(String)? onShare;
   final Function(String)? onEdit;
+  final Function(String)? onArchive;
+  final Function(String)? onMarkAsLearned;
   final WordCardConfig config;
   final double? maxWidth;
 
@@ -20,6 +22,8 @@ class WordCard extends StatelessWidget {
     this.onDelete,
     this.onShare,
     this.onEdit,
+    this.onArchive,
+    this.onMarkAsLearned,
     this.config = const WordCardConfig(),
     this.maxWidth,
   });
@@ -56,7 +60,7 @@ class WordCard extends StatelessWidget {
       cardContent = Slidable(
         key: ValueKey(word.id),
         endActionPane: ActionPane(
-          motion: const ScrollMotion(),
+          motion: const DrawerMotion(),
           children: [
             if (onEdit != null)
               SlidableAction(
@@ -73,6 +77,22 @@ class WordCard extends StatelessWidget {
                 foregroundColor: Colors.white,
                 icon: Icons.share,
                 label: 'Share',
+              ),
+            if (onArchive != null)
+              SlidableAction(
+                onPressed: (_) => onArchive!(word.id as String),
+                backgroundColor: Colors.purple,
+                foregroundColor: Colors.white,
+                icon: Icons.archive,
+                label: 'Archive',
+              ),
+            if (onMarkAsLearned != null)
+              SlidableAction(
+                onPressed: (_) => onMarkAsLearned!(word.id as String),
+                backgroundColor: Colors.teal,
+                foregroundColor: Colors.white,
+                icon: Icons.check_circle,
+                label: 'Learned',
               ),
             if (onDelete != null)
               SlidableAction(
@@ -93,13 +113,16 @@ class WordCard extends StatelessWidget {
         maxWidth: maxWidth ?? double.infinity,
       ),
       child: Card(
-        elevation: 2,
+        elevation: 4,
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: Material(
           color: Colors.transparent,
           child: InkWell(
-            onTap: () =>
-                Navigator.pushNamed(context, '/word-details', arguments: word),
+            onTap: () => Navigator.pushNamed(
+              context,
+              '/word-details',
+              arguments: word,
+            ),
             child: Hero(
               tag: 'word-${word.id}',
               child: cardContent,
