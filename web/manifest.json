@@ -1,6 +1,6 @@
 {
-    "name": "folder_notes",
-    "short_name": "folder_notes",
+    "name": "my_lab",
+    "short_name": "my_lab",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

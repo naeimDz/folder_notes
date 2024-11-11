@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.kudldz.naiem.ambit" "\0"
-            VALUE "FileDescription", "folder_notes" "\0"
+            VALUE "FileDescription", "my_lab" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "folder_notes" "\0"
+            VALUE "InternalName", "my_lab" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2024 com.kudldz.naiem.ambit. All rights reserved." "\0"
-            VALUE "OriginalFilename", "folder_notes.exe" "\0"
-            VALUE "ProductName", "folder_notes" "\0"
+            VALUE "OriginalFilename", "my_lab.exe" "\0"
+            VALUE "ProductName", "my_lab" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

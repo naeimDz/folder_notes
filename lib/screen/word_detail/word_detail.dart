@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:folder_notes/screen/shared/widgets/custom_sliver_app_bar.dart';
-import 'package:folder_notes/screen/word_detail/word.dart';
+import 'package:my_lab/screen/shared/widgets/custom_sliver_app_bar.dart';
+import 'package:my_lab/screen/word_detail/word.dart';
 
 class WordDetailScreen extends StatefulWidget {
   const WordDetailScreen({super.key});

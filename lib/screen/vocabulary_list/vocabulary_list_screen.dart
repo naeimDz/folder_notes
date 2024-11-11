@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:folder_notes/screen/shared/widgets/custom_sliver_app_bar.dart';
+import 'package:my_lab/screen/shared/widgets/custom_sliver_app_bar.dart';
 import 'package:provider/provider.dart';
 import '../../models/word_card_config.dart';
-import '../../providers/vocabulary_provider.dart';
+import '../../providers/word_provider.dart';
 import 'word_card.dart';
 
 class VocabularyListScreen extends StatefulWidget {
@@ -122,7 +122,7 @@ class _VocabularyListScreenState extends State<VocabularyListScreen>
             ),
             child: TextField(
               onChanged: (value) {
-                context.read<VocabularyProvider>().setSearchQuery(value);
+                context.read<WordProvider>().setSearchQuery(value);
               },
               decoration: InputDecoration(
                 hintText: 'Search words...',
@@ -209,11 +209,11 @@ class _VocabularyListScreenState extends State<VocabularyListScreen>
   }
 
   Widget _buildWordsList(BuildContext context) {
-    return Consumer<VocabularyProvider>(
+    return Consumer<WordProvider>(
       builder: (context, provider, child) {
-        final words = provider.filteredWords;
+        final words = provider.filterWords();
 
-        if (words.isEmpty) {
+        if (words.isNotEmpty) {
           return SliverFillRemaining(
             child: _buildEmptyState(),
           );

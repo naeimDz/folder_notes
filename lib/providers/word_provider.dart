@@ -6,6 +6,8 @@ import '../models/word.dart';
 class WordProvider with ChangeNotifier {
   final WordController _controller = WordController();
   List<Word> _words = [];
+  String _searchQuery = '';
+  String selectedTag = 'All';
   Word? _selectedWord;
   bool _isLoading = false;
   String? _error;
@@ -144,6 +146,21 @@ class WordProvider with ChangeNotifier {
     return _words
         .where((word) => tags.every((tag) => word.tags.contains(tag)))
         .toList();
+  }
+
+  List<Word> filterWords() {
+    return _words
+        .where((word) =>
+            word.word.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+            word.translation.toLowerCase().contains(_searchQuery.toLowerCase()))
+        /* .where((word) =>
+          tags.every((tag) => word.tags.contains(tag)))*/
+        .toList();
+  }
+
+  void setSearchQuery(String query) {
+    _searchQuery = query;
+    notifyListeners();
   }
 
   // Load words from Firebase

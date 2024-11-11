@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:folder_notes/screen/add_word/add_word.dart';
-import 'package:folder_notes/screen/advanced_features/analytics_screen.dart';
-import 'package:folder_notes/screen/home/home_screen.dart';
-import 'package:folder_notes/screen/word_detail/word_detail.dart';
+import 'package:my_lab/screen/add_word/add_word.dart';
+import 'package:my_lab/screen/advanced_features/analytics_screen.dart';
+import 'package:my_lab/screen/home/home_screen.dart';
+import 'package:my_lab/screen/word_detail/word_detail.dart';
 
 class AppRoutes {
   static final navigatorKey = GlobalKey<NavigatorState>();

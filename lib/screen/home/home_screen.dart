@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:folder_notes/screen/shared/widgets/custom_sliver_app_bar.dart';
+import 'package:my_lab/screen/shared/widgets/custom_sliver_app_bar.dart';
 import 'package:provider/provider.dart';
 import '../../providers/theme_provider.dart';
 import '../advanced_features/analytics_screen.dart';

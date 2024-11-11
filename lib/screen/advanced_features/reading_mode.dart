@@ -1,6 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:folder_notes/screen/advanced_features/word.dart'; // Ensure this file contains the Word class
+import 'package:my_lab/screen/advanced_features/word.dart'; // Ensure this file contains the Word class
 
 class ReadingMode extends StatefulWidget {
   const ReadingMode({super.key});

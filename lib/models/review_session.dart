@@ -1,4 +1,4 @@
-import 'package:folder_notes/models/review_schedule.dart';
+import 'package:my_lab/models/review_schedule.dart';
 
 class ReviewSession {
   final int totalWords;
