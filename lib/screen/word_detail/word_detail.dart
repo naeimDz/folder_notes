@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:my_lab/screen/shared/widgets/custom_sliver_app_bar.dart';
-import 'package:my_lab/screen/word_detail/word.dart';
+import 'package:provider/provider.dart';
+
+import '../../providers/word_provider.dart';
 
 class WordDetailScreen extends StatefulWidget {
   const WordDetailScreen({super.key});
@@ -109,7 +111,7 @@ class _WordDetailScreenState extends State<WordDetailScreen>
 
   Widget _buildDifficultyIndicator(int level) {
     return Row(
-      children: List.generate(5, (index) {
+      children: List.generate(4, (index) {
         return Container(
           width: 16,
           height: 16,
@@ -125,12 +127,14 @@ class _WordDetailScreenState extends State<WordDetailScreen>
 
   @override
   Widget build(BuildContext context) {
+    final word = Provider.of<WordProvider>(context).selectedWord;
+
     return Scaffold(
       backgroundColor: Colors.grey[100],
       body: CustomScrollView(
         slivers: [
           CustomSliverAppBar(
-            title: wordData["word"] as String,
+            title: word!.word,
             actions: [
               IconButton(
                 icon: AnimatedBuilder(
@@ -179,7 +183,7 @@ class _WordDetailScreenState extends State<WordDetailScreen>
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    wordData["translation"] as String,
+                                    word.translation,
                                     style: TextStyle(
                                       fontSize: 28,
                                       color: Colors.grey[800],
@@ -188,7 +192,7 @@ class _WordDetailScreenState extends State<WordDetailScreen>
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    wordData["phonetic"] as String,
+                                    word.details!.pronunciation,
                                     style: TextStyle(
                                       fontSize: 16,
                                       color: Colors.grey[600],
@@ -216,8 +220,7 @@ class _WordDetailScreenState extends State<WordDetailScreen>
                             ],
                           ),
                           const SizedBox(height: 16),
-                          _buildDifficultyIndicator(
-                              wordData["difficulty"] as int),
+                          _buildDifficultyIndicator(word.difficulty.index),
                         ],
                       ),
                     ),
@@ -231,13 +234,13 @@ class _WordDetailScreenState extends State<WordDetailScreen>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          wordData["definition"] as String,
+                          word.definition,
                           style: const TextStyle(fontSize: 16),
                         ),
                         if (showFullDefinition) ...[
                           const SizedBox(height: 12),
                           Text(
-                            wordData["extendedDefinition"] as String,
+                            "nothing show",
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.grey[700],
@@ -279,8 +282,7 @@ class _WordDetailScreenState extends State<WordDetailScreen>
                     backgroundColor: Colors.green[50],
                     child: Column(
                       children: [
-                        ...(wordData["examples"] as List<Map<String, String>>)
-                            .map((example) {
+                        ...(word.examples).map((example) {
                           return Container(
                             margin: const EdgeInsets.only(bottom: 16),
                             padding: const EdgeInsets.all(16),
@@ -296,20 +298,20 @@ class _WordDetailScreenState extends State<WordDetailScreen>
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  example["english"]!,
+                                  example,
                                   style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
                                 const SizedBox(height: 8),
-                                Text(
+                                /* Text(
                                   example["arabic"]!,
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: Colors.grey[700],
                                   ),
-                                ),
+                                ),*/
                               ],
                             ),
                           );
@@ -329,8 +331,7 @@ class _WordDetailScreenState extends State<WordDetailScreen>
                           child: Wrap(
                             spacing: 8,
                             runSpacing: 8,
-                            children: (wordData["synonyms"] as List<String>)
-                                .map((synonym) {
+                            children: (word.details!.synonyms).map((synonym) {
                               return Container(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 12,
@@ -361,8 +362,7 @@ class _WordDetailScreenState extends State<WordDetailScreen>
                           child: Wrap(
                             spacing: 8,
                             runSpacing: 8,
-                            children: (wordData["antonyms"] as List<String>)
-                                .map((antonym) {
+                            children: (word.details!.antonyms).map((antonym) {
                               return Container(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 12,
@@ -408,9 +408,7 @@ class _WordDetailScreenState extends State<WordDetailScreen>
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    (wordData["mastery"]
-                                            as Map<String, dynamic>)["level"]
-                                        as String,
+                                    (word.reviewStatus.name),
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16,
@@ -429,7 +427,7 @@ class _WordDetailScreenState extends State<WordDetailScreen>
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Text(
-                                "Next Review: ${(wordData["mastery"] as Map<String, dynamic>)["nextReview"]}",
+                                "Next Review: 3 days",
                                 style: TextStyle(
                                   color: Colors.purple[900],
                                   fontWeight: FontWeight.w500,
@@ -453,7 +451,7 @@ class _WordDetailScreenState extends State<WordDetailScreen>
                                   ),
                                 ),
                                 Text(
-                                  "${(wordData["mastery"] as Map<String, dynamic>)["accuracy"]}%",
+                                  "${word.masteryScore}%",
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -462,8 +460,7 @@ class _WordDetailScreenState extends State<WordDetailScreen>
                             ),
                             const SizedBox(height: 8),
                             _buildProgressIndicator(
-                              (wordData["mastery"]
-                                      as Map<String, dynamic>)["accuracy"]! /
+                              word.masteryScore /
                                   100.0, // Ensures it's a double
                               Colors.purple,
                             ),

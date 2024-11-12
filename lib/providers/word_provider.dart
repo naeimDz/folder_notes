@@ -1,4 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../controller/word_controller.dart';
 import '../models/word.dart';
@@ -9,14 +11,71 @@ class WordProvider with ChangeNotifier {
   String _searchQuery = '';
   String selectedTag = 'All';
   Word? _selectedWord;
+  Word? _wordOfTheDay;
   bool _isLoading = false;
   String? _error;
+  String? _lastFetchedDate;
+  List<Word> _todaysWords = [];
+
+  WordProvider() {
+    getWords();
+    loadTodaysWords();
+  }
 
   // Getters
   List<Word> get words => _words;
   Word? get selectedWord => _selectedWord;
+  Word? get wordOfTheDay => _wordOfTheDay;
   bool get isLoading => _isLoading;
   String? get error => _error;
+  List<Word> get todaysWords => _todaysWords;
+
+  Future<void> fetchWordOfTheDay() async {
+    final currentDate = DateFormat('yyyy-MM-dd')
+        .format(DateTime.now()); // Get current date in 'yyyy-MM-dd' format
+    final prefs = await SharedPreferences.getInstance();
+    _lastFetchedDate = prefs.getString('lastFetchedDate');
+
+    // If today's word is already fetched, no need to fetch it again
+    if (_lastFetchedDate == currentDate && _wordOfTheDay != null) {
+      return; // Word for today is already fetched, no need to fetch again
+    }
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      _wordOfTheDay = await _controller.getRandomWord();
+
+      // Store the fetched word and the current date
+      await prefs.setString('lastFetchedDate', currentDate);
+      await prefs.setString(
+          'word',
+          _wordOfTheDay!
+              .word); // Store word (you can store more data if necessary)
+    } catch (e) {
+      print(e); // Handle error here
+    }
+
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> loadTodaysWords({int limit = 3}) async {
+    _setLoading(true);
+    try {
+      _controller.getTodaysWords(limit).listen(
+        (words) {
+          _todaysWords = words;
+          notifyListeners();
+        },
+        onError: (e) {
+          _setError(e.toString());
+        },
+      );
+    } finally {
+      _setLoading(false);
+    }
+  }
 
   // CRUD Operations
   Future<void> addWord(Word word) async {
@@ -70,6 +129,12 @@ class WordProvider with ChangeNotifier {
   // Selection
   void selectWord(Word? word) {
     _selectedWord = word;
+    notifyListeners();
+  }
+
+  // Optionally, you can add a function to clear the selected word
+  void clearSelectedWord() {
+    _selectedWord = null;
     notifyListeners();
   }
 
@@ -165,18 +230,12 @@ class WordProvider with ChangeNotifier {
 
   // Load words from Firebase
   Future<void> getWords() async {
-    _setLoading(true);
-    try {
-      _controller.getWordsForReview().listen(
-        (words) {
-          _words = words;
-          notifyListeners();
-        },
-        onError: (e) => _setError(e.toString()),
-      );
-    } finally {
-      _setLoading(false);
-    }
+    _controller.getWordsForReview().listen(
+      (words) {
+        _words = words;
+        notifyListeners();
+      },
+    );
   }
 
   // Helper Methods

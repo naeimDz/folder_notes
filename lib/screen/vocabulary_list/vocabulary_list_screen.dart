@@ -3,6 +3,7 @@ import 'package:my_lab/screen/shared/widgets/custom_sliver_app_bar.dart';
 import 'package:provider/provider.dart';
 import '../../models/word_card_config.dart';
 import '../../providers/word_provider.dart';
+
 import 'word_card.dart';
 
 class VocabularyListScreen extends StatefulWidget {
@@ -212,7 +213,7 @@ class _VocabularyListScreenState extends State<VocabularyListScreen>
     return Consumer<WordProvider>(
       builder: (context, provider, child) {
         final words = provider.filterWords();
-
+        print('test words from ui === $words');
         if (words.isNotEmpty) {
           return SliverFillRemaining(
             child: _buildEmptyState(),

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/word.dart';
 
@@ -51,6 +53,36 @@ class WordController {
   }
 
   // Custom Queries
+
+// Fetch a random word from the collection
+  Future<Word?> getRandomWord() async {
+    try {
+      final querySnapshot = await _firestore.collection(_collection).get();
+      if (querySnapshot.docs.isNotEmpty) {
+        final randomIndex = Random().nextInt(querySnapshot.docs.length);
+        final doc = querySnapshot.docs[randomIndex];
+        return Word.fromFirestore(doc);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      throw Exception('Failed to get word: $e');
+    }
+  }
+
+  Stream<List<Word>> getTodaysWords(int latestLimit) {
+    return _firestore
+        .collection(_collection)
+        .orderBy('dateAdded', descending: true)
+        .limit(latestLimit)
+        .snapshots()
+        .handleError((error) {
+      print("Error fetching words: $error");
+    }) // Log error, or handle it in any way you need
+        .map((snapshot) {
+      return snapshot.docs.map((doc) => Word.fromFirestore(doc)).toList();
+    });
+  }
 
   Stream<List<Word>> getWords() {
     return _firestore.collection(_collection).snapshots().map((snapshot) =>

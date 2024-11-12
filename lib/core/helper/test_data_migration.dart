@@ -19,7 +19,7 @@ class TestDataMigration {
         Word(
           id: '1',
           word: 'ubiquitous',
-          translation: '遍在的',
+          translation: 'شائع',
           definition: 'present, appearing, or found everywhere',
           dateAdded: DateTime.now().subtract(Duration(days: 30)),
           lastReviewed: DateTime.now().subtract(Duration(days: 2)),
@@ -45,7 +45,7 @@ class TestDataMigration {
         Word(
           id: '2',
           word: 'ephemeral',
-          translation: '短暫的',
+          translation: 'زائل',
           definition: 'lasting for a very short time',
           dateAdded: DateTime.now().subtract(Duration(days: 25)),
           lastReviewed: DateTime.now().subtract(Duration(days: 1)),
@@ -71,7 +71,7 @@ class TestDataMigration {
         Word(
           id: '3',
           word: 'serendipity',
-          translation: '意外發現',
+          translation: 'حسن الحظ',
           definition:
               'the occurrence and development of events by chance in a happy or beneficial way',
           dateAdded: DateTime.now().subtract(Duration(days: 20)),
@@ -93,7 +93,7 @@ class TestDataMigration {
         Word(
           id: '4',
           word: 'paradigm',
-          translation: '範例',
+          translation: 'نموذج',
           definition: 'a typical example or pattern of something',
           dateAdded: DateTime.now().subtract(Duration(days: 15)),
           examples: [
@@ -114,7 +114,7 @@ class TestDataMigration {
         Word(
           id: '5',
           word: 'resilient',
-          translation: '有彈性的',
+          translation: 'مرن',
           definition:
               'able to withstand or recover quickly from difficult conditions',
           dateAdded: DateTime.now().subtract(Duration(days: 10)),
@@ -131,6 +131,221 @@ class TestDataMigration {
             antonyms: ['fragile', 'weak', 'vulnerable'],
             pronunciation: 'ri-ZIL-yent',
             partOfSpeech: 'adjective',
+          ),
+        ),
+        Word(
+          id: '6',
+          word: 'ameliorate',
+          translation: 'تحسين',
+          definition: 'to make something better or improve',
+          dateAdded: DateTime.now().subtract(Duration(days: 40)),
+          lastReviewed: DateTime.now().subtract(Duration(days: 5)),
+          isFavorite: false,
+          examples: [
+            'The new policies aim to ameliorate living conditions.',
+            'Efforts to ameliorate the situation were well-received.'
+          ],
+          difficulty: Difficulty.advanced,
+          tags: ['improvement', 'positive', 'formal'],
+          masteryScore: 70.0,
+          reviewStatus: ReviewStatus.learning,
+          details: WordDetails(
+            synonyms: ['improve', 'enhance', 'better'],
+            antonyms: ['worsen', 'degrade', 'deteriorate'],
+            pronunciation: 'uh-MEEL-yuh-rayt',
+            partOfSpeech: 'verb',
+            usageNotes: 'Often used in formal and academic contexts',
+            collocations: ['ameliorate conditions', 'ameliorate health'],
+          ),
+        ),
+        Word(
+          id: '7',
+          word: 'tenacious',
+          translation: 'عنيد',
+          definition: 'holding firmly to something; very determined',
+          dateAdded: DateTime.now().subtract(Duration(days: 35)),
+          examples: [
+            'She was tenacious in her pursuit of the truth.',
+            'A tenacious athlete never gives up.'
+          ],
+          difficulty: Difficulty.intermediate,
+          tags: ['determination', 'character', 'strength'],
+          masteryScore: 60.0,
+          reviewStatus: ReviewStatus.learning,
+          details: WordDetails(
+            synonyms: ['persistent', 'determined', 'steadfast'],
+            antonyms: ['yielding', 'weak', 'flexible'],
+            pronunciation: 'tuh-NAY-shuhs',
+            partOfSpeech: 'adjective',
+            usageNotes: 'Used to describe people with strong resolve',
+          ),
+        ),
+        Word(
+          id: '8',
+          word: 'ambiguous',
+          translation: 'غامض',
+          definition: 'open to more than one interpretation; not clear',
+          dateAdded: DateTime.now().subtract(Duration(days: 32)),
+          examples: [
+            'The ending of the story was ambiguous.',
+            'Her response was deliberately ambiguous.'
+          ],
+          difficulty: Difficulty.advanced,
+          tags: ['uncertainty', 'vague', 'language'],
+          masteryScore: 55.0,
+          reviewStatus: ReviewStatus.learning,
+          details: WordDetails(
+            synonyms: ['unclear', 'vague', 'obscure'],
+            antonyms: ['clear', 'definite', 'certain'],
+            pronunciation: 'am-BIG-yoo-us',
+            partOfSpeech: 'adjective',
+          ),
+        ),
+        Word(
+          id: '9',
+          word: 'innate',
+          translation: 'فطري',
+          definition: 'inborn; natural',
+          dateAdded: DateTime.now().subtract(Duration(days: 30)),
+          examples: [
+            'He has an innate ability to connect with people.',
+            'Some talents are considered innate rather than learned.'
+          ],
+          difficulty: Difficulty.intermediate,
+          tags: ['natural', 'inborn', 'traits'],
+          masteryScore: 75.0,
+          reviewStatus: ReviewStatus.mastered,
+          details: WordDetails(
+            synonyms: ['inherent', 'natural', 'instinctive'],
+            antonyms: ['acquired', 'learned', 'artificial'],
+            pronunciation: 'in-NATE',
+            partOfSpeech: 'adjective',
+          ),
+        ),
+        Word(
+          id: '10',
+          word: 'cognizant',
+          translation: 'مدرك',
+          definition: 'having knowledge or awareness',
+          dateAdded: DateTime.now().subtract(Duration(days: 28)),
+          examples: [
+            'They are cognizant of the potential risks.',
+            'She became cognizant of the changes around her.'
+          ],
+          difficulty: Difficulty.advanced,
+          tags: ['awareness', 'knowledge', 'formal'],
+          masteryScore: 50.0,
+          reviewStatus: ReviewStatus.learning,
+          details: WordDetails(
+            synonyms: ['aware', 'informed', 'conscious'],
+            antonyms: ['unaware', 'ignorant', 'oblivious'],
+            pronunciation: 'KOG-ni-zuhnt',
+            partOfSpeech: 'adjective',
+          ),
+        ),
+        Word(
+          id: '11',
+          word: 'pragmatic',
+          translation: 'واقعي',
+          definition: 'dealing with things sensibly and realistically',
+          dateAdded: DateTime.now().subtract(Duration(days: 26)),
+          examples: [
+            'She took a pragmatic approach to solving the problem.',
+            'Pragmatic solutions often work better in the real world.'
+          ],
+          difficulty: Difficulty.intermediate,
+          tags: ['practical', 'realistic', 'sensible'],
+          masteryScore: 65.0,
+          reviewStatus: ReviewStatus.learning,
+          details: WordDetails(
+            synonyms: ['practical', 'realistic', 'sensible'],
+            antonyms: ['idealistic', 'theoretical', 'impractical'],
+            pronunciation: 'prag-MAT-ik',
+            partOfSpeech: 'adjective',
+          ),
+        ),
+        Word(
+          id: '12',
+          word: 'lucid',
+          translation: 'واضح',
+          definition: 'clear and easy to understand',
+          dateAdded: DateTime.now().subtract(Duration(days: 24)),
+          examples: [
+            'His explanations are always lucid and precise.',
+            'The dream was surprisingly lucid.'
+          ],
+          difficulty: Difficulty.beginner,
+          tags: ['clarity', 'understanding', 'language'],
+          masteryScore: 85.0,
+          reviewStatus: ReviewStatus.mastered,
+          details: WordDetails(
+            synonyms: ['clear', 'comprehensible', 'intelligible'],
+            antonyms: ['confusing', 'ambiguous', 'vague'],
+            pronunciation: 'LOO-sid',
+            partOfSpeech: 'adjective',
+          ),
+        ),
+        Word(
+          id: '13',
+          word: 'persevere',
+          translation: 'يثابر',
+          definition: 'to persist in a course of action despite difficulty',
+          dateAdded: DateTime.now().subtract(Duration(days: 22)),
+          examples: [
+            'Despite challenges, she continued to persevere.',
+            'They persevered through difficult conditions.'
+          ],
+          difficulty: Difficulty.beginner,
+          tags: ['determination', 'persistence', 'effort'],
+          masteryScore: 80.0,
+          reviewStatus: ReviewStatus.mastered,
+          details: WordDetails(
+            synonyms: ['persist', 'endure', 'continue'],
+            antonyms: ['give up', 'quit', 'surrender'],
+            pronunciation: 'PUR-suh-veer',
+            partOfSpeech: 'verb',
+          ),
+        ),
+        Word(
+          id: '14',
+          word: 'mitigate',
+          translation: 'يخفف',
+          definition: 'to make less severe or serious',
+          dateAdded: DateTime.now().subtract(Duration(days: 18)),
+          examples: [
+            'Efforts were made to mitigate the damage.',
+            'They implemented strategies to mitigate risks.'
+          ],
+          difficulty: Difficulty.advanced,
+          tags: ['reduction', 'alleviation', 'formal'],
+          masteryScore: 60.0,
+          reviewStatus: ReviewStatus.learning,
+          details: WordDetails(
+            synonyms: ['reduce', 'alleviate', 'lessen'],
+            antonyms: ['intensify', 'worsen', 'aggravate'],
+            pronunciation: 'MIT-i-gate',
+            partOfSpeech: 'verb',
+          ),
+        ),
+        Word(
+          id: '15',
+          word: 'euphoria',
+          translation: 'نشوة',
+          definition: 'a feeling of intense excitement and happiness',
+          dateAdded: DateTime.now().subtract(Duration(days: 12)),
+          examples: [
+            'She felt a surge of euphoria after the accomplishment.',
+            'Winning the competition brought him euphoria.'
+          ],
+          difficulty: Difficulty.intermediate,
+          tags: ['emotion', 'positive', 'experience'],
+          masteryScore: 55.0,
+          reviewStatus: ReviewStatus.learning,
+          details: WordDetails(
+            synonyms: ['joy', 'bliss', 'elation'],
+            antonyms: ['despair', 'sadness', 'misery'],
+            pronunciation: 'yoo-FOR-ee-uh',
+            partOfSpeech: 'noun',
           ),
         ),
       ];

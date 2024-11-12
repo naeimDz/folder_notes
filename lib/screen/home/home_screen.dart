@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:my_lab/models/word.dart';
+import 'package:my_lab/screen/home/word_of_the_day_widget.dart';
 import 'package:my_lab/screen/shared/widgets/custom_sliver_app_bar.dart';
 import 'package:provider/provider.dart';
+import '../../providers/metadata_provider.dart';
 import '../../providers/theme_provider.dart';
+import '../../providers/word_provider.dart';
 import '../advanced_features/analytics_screen.dart';
 import '../advanced_features/categories_screen.dart';
 import '../advanced_features/space_practice.dart';
 import '../vocabulary_list/vocabulary_list_screen.dart';
-import '../word_detail/word_detail.dart';
 import 'dart:ui' as ui;
 
 class HomeScreen extends StatefulWidget {
@@ -68,6 +71,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    final wordProvider = Provider.of<WordProvider>(context, listen: false);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      wordProvider.fetchWordOfTheDay(); // Pass the word document ID here
+    });
     _progressController = AnimationController(
       duration: const Duration(milliseconds: 1500),
       vsync: this,
@@ -120,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   SizedBox(height: 24),
                   _buildEnhancedStats(context),
                   SizedBox(height: 24),
-                  _buildWordOfTheDay(context, isDark),
+                  WordOfTheDayWidget(),
                   SizedBox(height: 24),
                   _buildTodaysWords(isDark),
                   SizedBox(height: 24),
@@ -240,18 +247,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildEnhancedStats(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: 160,
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: [
-          _buildStatCard(
-            "Words Mastered",
-            "248",
-            Icons.auto_awesome,
-            [Colors.purple[400]!, Colors.purple[600]!],
-            context,
-          ),
+          Consumer<MetadataProvider>(builder: (context, provider, child) {
+            return _buildStatCard(
+              "Words Mastered",
+              provider.wordCount.toString(),
+              Icons.auto_awesome,
+              [Colors.purple[400]!, Colors.purple[600]!],
+              context,
+            );
+          }),
           _buildStatCard(
             "Current Streak",
             "7 days",
@@ -330,142 +339,71 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildWordOfTheDay(BuildContext context, bool isDark) {
-    return Container(
-      decoration: BoxDecoration(
-        color: isDark ? Colors.grey[850] : Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 15,
-            offset: Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => WordDetailScreen()),
-          ),
-          borderRadius: BorderRadius.circular(20),
-          child: Padding(
-            padding: EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Word of the Day",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: Colors.blue[100],
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        "Advanced",
-                        style: TextStyle(
-                          color: Colors.blue[800],
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 20),
-                Text(
-                  "Resilient",
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blue[600],
-                  ),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  "/rɪˈzɪlɪənt/",
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey[600],
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-                SizedBox(height: 16),
-                Text(
-                  "Able to recover quickly from difficult conditions.",
-                  style: TextStyle(fontSize: 16),
-                ),
-                SizedBox(height: 16),
-                Row(
-                  children: [
-                    _buildChip("Tough"),
-                    SizedBox(width: 8),
-                    _buildChip("Flexible"),
-                    SizedBox(width: 8),
-                    _buildChip("Strong"),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildChip(String label) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.grey[200],
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          color: Colors.grey[800],
-          fontSize: 12,
-        ),
-      ),
-    );
-  }
-
   Widget _buildTodaysWords(bool isDark) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Today's Words",
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        SizedBox(height: 16),
-        ...todaysWords.map((word) => _buildWordCard(word, isDark)),
-      ],
+    return Consumer<WordProvider>(
+      builder: (context, provider, child) {
+        // Check if the data is still loading
+        if (provider.isLoading) {
+          return Center(child: CircularProgressIndicator());
+        }
+
+        // Check for any errors during data loading
+        if (provider.error != null) {
+          return Center(
+            child: Text(
+              'Error loading words: ${provider.error}',
+              style: TextStyle(color: Colors.red),
+            ),
+          );
+        }
+
+        // If there are no words for today, show an empty message
+        if (provider.todaysWords.isEmpty) {
+          return Center(
+            child: Text(
+              "No words available for today",
+              style: TextStyle(
+                fontSize: 16,
+                color: isDark ? Colors.white70 : Colors.black54,
+              ),
+            ),
+          );
+        }
+
+        // Display today's words if available
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Today's Words",
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: isDark ? Colors.white : Colors.black,
+              ),
+            ),
+            SizedBox(height: 16),
+            ...provider.todaysWords.map((word) => _buildWordCard(word, isDark)),
+          ],
+        );
+      },
     );
   }
 
-  Widget _buildWordCard(Map<String, String> word, bool isDark) {
+  Widget _buildWordCard(Word word, bool isDark) {
     Color difficultyColor;
-    switch (word['difficulty']) {
-      case 'Easy':
+    switch (word.difficulty.name) {
+      case 'beginner':
         difficultyColor = Colors.green;
         break;
-      case 'Medium':
+      case 'intermediate':
         difficultyColor = Colors.orange;
+        break;
+      case 'advanced':
+        difficultyColor = Colors.purple;
+        break;
+      case 'expert':
+        difficultyColor = Colors.red;
         break;
       default:
         difficultyColor = Colors.red;
@@ -488,7 +426,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(15),
-          onTap: () {},
+          onTap: () {
+            // Set the selected word in the provider
+            Provider.of<WordProvider>(context, listen: false).selectWord(word);
+            Navigator.pushNamed(context, "/word-details");
+          },
           child: Padding(
             padding: EdgeInsets.all(16),
             child: Row(
@@ -502,7 +444,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   ),
                   child: Center(
                     child: Text(
-                      word['word']![0],
+                      word.word[0],
                       style: TextStyle(
                         color: difficultyColor,
                         fontSize: 20,
@@ -517,7 +459,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        word['word']!,
+                        word.word,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -525,7 +467,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       ),
                       SizedBox(height: 4),
                       Text(
-                        word['translation']!,
+                        word.translation,
                         style: TextStyle(
                           color: Colors.grey[600],
                           fontSize: 14,
@@ -544,7 +486,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
-                        word['difficulty']!,
+                        word.difficulty.name,
                         style: TextStyle(
                           color: difficultyColor,
                           fontSize: 12,
@@ -554,7 +496,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     ),
                     SizedBox(height: 4),
                     Text(
-                      word['timeAdded']!,
+                      word.dateAdded.day.toString(),
                       style: TextStyle(
                         color: Colors.grey[600],
                         fontSize: 12,

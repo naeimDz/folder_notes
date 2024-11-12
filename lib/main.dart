@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'core/helper/test_data_migration.dart';
+import 'providers/metadata_provider.dart';
 import 'providers/word_provider.dart';
 
 void main() async {
@@ -31,6 +32,7 @@ void main() async {
       child: MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (_) => WordProvider()),
+          ChangeNotifierProvider(create: (_) => MetadataProvider()),
           Provider<SharedPreferences>.value(value: prefs),
           ChangeNotifierProvider<ThemeProvider>(
             create: (context) => ThemeProvider(prefs: prefs),
