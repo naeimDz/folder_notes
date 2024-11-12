@@ -132,7 +132,7 @@ class WordProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // Optionally, you can add a function to clear the selected word
+  // clear the selected word
   void clearSelectedWord() {
     _selectedWord = null;
     notifyListeners();
@@ -230,7 +230,8 @@ class WordProvider with ChangeNotifier {
 
   // Load words from Firebase
   Future<void> getWords() async {
-    _controller.getWordsForReview().listen(
+    print("object");
+    _controller.getWords().listen(
       (words) {
         _words = words;
         notifyListeners();

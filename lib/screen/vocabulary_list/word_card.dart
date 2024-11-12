@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:my_lab/models/word_card_config.dart';
+import 'package:provider/provider.dart';
 
 import '../../models/word.dart';
+import '../../providers/word_provider.dart';
 
 class WordCard extends StatelessWidget {
   final Word word;
@@ -118,11 +120,16 @@ class WordCard extends StatelessWidget {
         child: Material(
           color: Colors.transparent,
           child: InkWell(
-            onTap: () => Navigator.pushNamed(
-              context,
-              '/word-details',
-              arguments: word,
-            ),
+            onTap: () {
+              // Set the selected word in the provider
+              Provider.of<WordProvider>(context, listen: false)
+                  .selectWord(word);
+              Navigator.pushNamed(
+                context,
+                '/word-details',
+                arguments: word,
+              );
+            },
             child: Hero(
               tag: 'word-${word.id}',
               child: cardContent,

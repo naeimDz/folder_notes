@@ -213,10 +213,13 @@ class _VocabularyListScreenState extends State<VocabularyListScreen>
     return Consumer<WordProvider>(
       builder: (context, provider, child) {
         final words = provider.filterWords();
-        print('test words from ui === $words');
-        if (words.isNotEmpty) {
+
+        if (words.isEmpty) {
+          // Show loading spinner if words list is empty and we are still fetching data
           return SliverFillRemaining(
-            child: _buildEmptyState(),
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
           );
         }
 
@@ -244,7 +247,8 @@ class _VocabularyListScreenState extends State<VocabularyListScreen>
                     child: Padding(
                       padding: EdgeInsets.only(bottom: 12),
                       child: WordCard(
-                        onMarkAsLearned: (p0) => print("we are here test"),
+                        onMarkAsLearned: (word) =>
+                            print("Mark as learned: $word"),
                         word: words[index],
                         config: WordCardConfig(
                           showDefinition: true,
@@ -261,10 +265,10 @@ class _VocabularyListScreenState extends State<VocabularyListScreen>
                           print("Share word with id: $wordId");
                         },
                         onDelete: (wordId) {
-                          print("deletz!!!");
+                          print("Delete word with id: $wordId");
                         },
-                        onFavoriteToggle: (String) {
-                          print("favorite one");
+                        onFavoriteToggle: (wordId) {
+                          print("Toggle favorite for word id: $wordId");
                         },
                       ),
                     ),
