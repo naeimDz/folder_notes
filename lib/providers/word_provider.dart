@@ -199,21 +199,13 @@ class WordProvider with ChangeNotifier {
   }
 
   // Search and filter methods
-  List<Word> searchWords(String query) {
-    return _words
-        .where((word) =>
-            word.word.toLowerCase().contains(query.toLowerCase()) ||
-            word.translation.toLowerCase().contains(query.toLowerCase()))
-        .toList();
-  }
-
   List<Word> filterByTags(List<String> tags) {
     return _words
         .where((word) => tags.every((tag) => word.tags.contains(tag)))
         .toList();
   }
 
-  List<Word> filterWords() {
+  List<Word> searchWords() {
     return _words
         .where((word) =>
             word.word.toLowerCase().contains(_searchQuery.toLowerCase()) ||

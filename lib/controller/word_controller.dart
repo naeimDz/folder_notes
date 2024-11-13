@@ -11,10 +11,7 @@ class WordController {
   Future<void> addWord(Word word) async {
     try {
       word.validate();
-      await _firestore
-          .collection(_collection)
-          .doc(word.id)
-          .set(word.toFirestore());
+      await _firestore.collection(_collection).doc().set(word.toFirestore());
     } catch (e) {
       throw Exception('Failed to add word: $e');
     }

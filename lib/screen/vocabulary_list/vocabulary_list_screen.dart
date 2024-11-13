@@ -212,7 +212,7 @@ class _VocabularyListScreenState extends State<VocabularyListScreen>
   Widget _buildWordsList(BuildContext context) {
     return Consumer<WordProvider>(
       builder: (context, provider, child) {
-        final words = provider.filterWords();
+        final words = provider.searchWords();
 
         if (words.isEmpty) {
           // Show loading spinner if words list is empty and we are still fetching data

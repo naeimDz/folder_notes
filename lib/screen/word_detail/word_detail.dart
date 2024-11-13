@@ -299,8 +299,8 @@ class _WordDetailScreenState extends State<WordDetailScreen>
                     ),
                   // Synonyms & Antonyms
                   WordRelationsWidget(
-                      synonyms: word.details?.synonyms ?? [],
-                      antonyms: word.details?.antonyms ?? []),
+                    word: word,
+                  ),
 
                   // Learning Progress
                   LearningProgressWidget(
