@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AddWordScreen extends StatefulWidget {
-  const AddWordScreen({Key? key}) : super(key: key);
+  const AddWordScreen({super.key});
 
   @override
   _AddWordScreenState createState() => _AddWordScreenState();

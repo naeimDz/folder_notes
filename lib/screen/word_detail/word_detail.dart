@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_lab/screen/shared/widgets/custom_sliver_app_bar.dart';
+import 'package:my_lab/screen/word_detail/learning_progress_widget.dart';
+import 'package:my_lab/screen/word_detail/word_relations_widget.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/word_provider.dart';
@@ -37,35 +39,17 @@ class _WordDetailScreenState extends State<WordDetailScreen>
     super.dispose();
   }
 
-  // Sample word data
-
-  Widget _buildProgressIndicator(double value, Color color) {
-    return Container(
-      height: 4,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Colors.grey[200],
-        borderRadius: BorderRadius.circular(2),
-      ),
-      child: FractionallySizedBox(
-        alignment: Alignment.centerLeft,
-        widthFactor: value,
-        child: Container(
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(2),
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildCustomCard({
     required String title,
     required Widget child,
     Color? backgroundColor,
     EdgeInsets? padding,
+    bool showIfEmpty = true,
   }) {
+    if (!showIfEmpty && child is Column && (child.children.isEmpty)) {
+      return const SizedBox.shrink();
+    }
+
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
@@ -109,7 +93,8 @@ class _WordDetailScreenState extends State<WordDetailScreen>
     );
   }
 
-  Widget _buildDifficultyIndicator(int level) {
+  Widget _buildDifficultyIndicator(int? level) {
+    final safeLevel = level?.clamp(0, 4) ?? 0;
     return Row(
       children: List.generate(4, (index) {
         return Container(
@@ -118,23 +103,55 @@ class _WordDetailScreenState extends State<WordDetailScreen>
           margin: const EdgeInsets.only(right: 4),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: index < level ? Colors.orange : Colors.grey[300],
+            color: index < safeLevel ? Colors.orange : Colors.grey[300],
           ),
         );
       }),
     );
   }
 
+  Widget _buildErrorPlaceholder({required String message}) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error_outline, size: 48, color: Colors.grey[400]),
+            const SizedBox(height: 16),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.grey[600],
+                fontSize: 16,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final word = Provider.of<WordProvider>(context).selectedWord;
+    final wordProvider = Provider.of<WordProvider>(context);
+    final word = wordProvider.selectedWord;
+
+    if (word == null) {
+      return Scaffold(
+        body: _buildErrorPlaceholder(
+          message: "Word data not found. Please try again later.",
+        ),
+      );
+    }
 
     return Scaffold(
       backgroundColor: Colors.grey[100],
       body: CustomScrollView(
         slivers: [
           CustomSliverAppBar(
-            title: word!.word,
+            title: word.word,
             actions: [
               IconButton(
                 icon: AnimatedBuilder(
@@ -179,26 +196,31 @@ class _WordDetailScreenState extends State<WordDetailScreen>
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    word.translation,
-                                    style: TextStyle(
-                                      fontSize: 28,
-                                      color: Colors.grey[800],
-                                      fontWeight: FontWeight.bold,
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      word.translation,
+                                      style: TextStyle(
+                                        fontSize: 28,
+                                        color: Colors.grey[800],
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    word.details!.pronunciation,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.grey[600],
-                                    ),
-                                  ),
-                                ],
+                                    if (word.details?.pronunciation !=
+                                        null) ...[
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        word.details!.pronunciation,
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.grey[600],
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
                               ),
                               GestureDetector(
                                 onTap: () {
@@ -219,8 +241,10 @@ class _WordDetailScreenState extends State<WordDetailScreen>
                               ),
                             ],
                           ),
-                          const SizedBox(height: 16),
-                          _buildDifficultyIndicator(word.difficulty.index),
+                          ...[
+                            const SizedBox(height: 16),
+                            _buildDifficultyIndicator(word.difficulty.index),
+                          ],
                         ],
                       ),
                     ),
@@ -237,238 +261,51 @@ class _WordDetailScreenState extends State<WordDetailScreen>
                           word.definition,
                           style: const TextStyle(fontSize: 16),
                         ),
-                        if (showFullDefinition) ...[
-                          const SizedBox(height: 12),
-                          Text(
-                            "nothing show",
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey[700],
-                            ),
-                          ),
-                        ],
-                        TextButton(
-                          onPressed: () {
-                            setState(() {
-                              showFullDefinition = !showFullDefinition;
-                            });
-                          },
-                          style: TextButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                showFullDefinition ? 'Show Less' : 'Show More',
-                                style: TextStyle(color: Colors.blue[700]),
-                              ),
-                              Icon(
-                                showFullDefinition
-                                    ? Icons.keyboard_arrow_up
-                                    : Icons.keyboard_arrow_down,
-                                color: Colors.blue[700],
-                              ),
-                            ],
-                          ),
-                        ),
                       ],
                     ),
                   ),
 
                   // Examples Section
-                  _buildCustomCard(
-                    title: "Examples",
-                    backgroundColor: Colors.green[50],
-                    child: Column(
-                      children: [
-                        ...(word.examples).map((example) {
-                          return Container(
-                            margin: const EdgeInsets.only(bottom: 16),
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: Colors.green[100]!,
-                                width: 1,
-                              ),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  example,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                /* Text(
-                                  example["arabic"]!,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey[700],
-                                  ),
-                                ),*/
-                              ],
-                            ),
-                          );
-                        }).toList(),
-                      ],
-                    ),
-                  ),
-
-                  // Synonyms & Antonyms
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildCustomCard(
-                          title: "Synonyms",
-                          backgroundColor: Colors.green[50],
-                          padding: const EdgeInsets.all(16),
-                          child: Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: (word.details!.synonyms).map((synonym) {
-                              return Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 6,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.green[100],
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Text(
-                                  synonym,
-                                  style: TextStyle(
-                                    color: Colors.green[900],
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              );
-                            }).toList(),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: _buildCustomCard(
-                          title: "Antonyms",
-                          backgroundColor: Colors.red[50],
-                          padding: const EdgeInsets.all(16),
-                          child: Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: (word.details!.antonyms).map((antonym) {
-                              return Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 6,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.red[100],
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Text(
-                                  antonym,
-                                  style: TextStyle(
-                                    color: Colors.red[900],
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              );
-                            }).toList(),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  // Learning Progress
-                  _buildCustomCard(
-                    title: "Learning Progress",
-                    backgroundColor: Colors.purple[50],
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "Mastery Level",
-                                    style: TextStyle(
-                                      color: Colors.grey[700],
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    (word.reviewStatus.name),
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 6,
-                              ),
+                  if (word.examples.isNotEmpty)
+                    _buildCustomCard(
+                      title: "Examples",
+                      backgroundColor: Colors.green[50],
+                      showIfEmpty: false,
+                      child: Column(
+                        children: [
+                          ...(word.examples).map((example) {
+                            return Container(
+                              margin: const EdgeInsets.only(bottom: 16),
+                              padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                color: Colors.purple[100],
-                                borderRadius: BorderRadius.circular(20),
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: Colors.green[100]!,
+                                  width: 1,
+                                ),
                               ),
                               child: Text(
-                                "Next Review: 3 days",
-                                style: TextStyle(
-                                  color: Colors.purple[900],
+                                example,
+                                style: const TextStyle(
+                                  fontSize: 16,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Quiz Accuracy",
-                                  style: TextStyle(
-                                    color: Colors.grey[700],
-                                    fontSize: 14,
-                                  ),
-                                ),
-                                Text(
-                                  "${word.masteryScore}%",
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            _buildProgressIndicator(
-                              word.masteryScore /
-                                  100.0, // Ensures it's a double
-                              Colors.purple,
-                            ),
-                          ],
-                        ),
-                      ],
+                            );
+                          }),
+                        ],
+                      ),
                     ),
-                  ),
+                  // Synonyms & Antonyms
+                  WordRelationsWidget(
+                      synonyms: word.details?.synonyms ?? [],
+                      antonyms: word.details?.antonyms ?? []),
+
+                  // Learning Progress
+                  LearningProgressWidget(
+                      reviewStatus: word.reviewStatus.name,
+                      masteryScore: word.masteryScore),
 
                   // Quick Actions Section
                   Container(
@@ -568,6 +405,98 @@ class _WordDetailScreenState extends State<WordDetailScreen>
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  // Add error handling widget for no data scenarios
+  Widget _buildNoDataPlaceholder({required String message}) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.info_outline,
+              size: 48,
+              color: Colors.grey[400],
+            ),
+            const SizedBox(height: 16),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey[600],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Add error handling for specific sections
+  Widget Function(FlutterErrorDetails details) _buildSectionErrorHandler({
+    required Widget child,
+    required String fallbackMessage,
+    bool showFallback = true,
+  }) {
+    return ErrorWidget.builder = (FlutterErrorDetails details) {
+      return showFallback
+          ? _buildNoDataPlaceholder(message: fallbackMessage)
+          : const SizedBox.shrink();
+    };
+  }
+
+  // Add method to handle safe string display
+  String _getSafeString(String? value, {String fallback = ''}) {
+    return value?.isNotEmpty == true ? value! : fallback;
+  }
+}
+
+// Add extension method for safer null handling
+extension StringExtension on String? {
+  String orEmpty() => this ?? '';
+
+  bool get isNullOrEmpty => this == null || this!.isEmpty;
+
+  String ifEmpty(String fallback) => isNullOrEmpty ? fallback : this!;
+}
+
+// Add a custom exception class for word-related errors
+class WordDetailException implements Exception {
+  final String message;
+  final String? code;
+
+  WordDetailException(this.message, {this.code});
+
+  @override
+  String toString() =>
+      'WordDetailException: $message${code != null ? ' (Code: $code)' : ''}';
+}
+
+// Add mixin for error handling functionality
+mixin WordErrorHandler {
+  void handleError(BuildContext context, dynamic error) {
+    String message;
+    if (error is WordDetailException) {
+      message = error.message;
+    } else {
+      message = 'An unexpected error occurred. Please try again.';
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.red[700],
+        action: SnackBarAction(
+          label: 'Dismiss',
+          textColor: Colors.white,
+          onPressed: () {},
         ),
       ),
     );
