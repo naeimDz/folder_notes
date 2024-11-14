@@ -26,6 +26,31 @@ class WordDetails {
     this.imageUrl,
     this.customProperties = const {},
   });
+  WordDetails copyWith({
+    List<Definition>? definitions,
+    List<String>? synonyms,
+    List<String>? antonyms,
+    String? pronunciation,
+    String? partOfSpeech,
+    String? usageNotes,
+    List<String>? collocations,
+    String? audioUrl,
+    String? imageUrl,
+    Map<String, CustomProperty>? customProperties,
+  }) {
+    return WordDetails(
+      definitions: definitions ?? this.definitions,
+      synonyms: synonyms ?? this.synonyms,
+      antonyms: antonyms ?? this.antonyms,
+      pronunciation: pronunciation ?? this.pronunciation,
+      partOfSpeech: partOfSpeech ?? this.partOfSpeech,
+      usageNotes: usageNotes ?? this.usageNotes,
+      collocations: collocations ?? this.collocations,
+      audioUrl: audioUrl ?? this.audioUrl,
+      imageUrl: imageUrl ?? this.imageUrl,
+      customProperties: customProperties ?? this.customProperties,
+    );
+  }
 
   void validate() {
     if (audioUrl != null && !Uri.tryParse(audioUrl!)!.isAbsolute) {

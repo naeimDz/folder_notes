@@ -42,6 +42,40 @@ class Word {
     this.customProperties = const {},
   });
 
+  Word copyWith({
+    String? id,
+    String? word,
+    String? translation,
+    String? definition,
+    DateTime? dateAdded,
+    DateTime? lastReviewed,
+    bool? isFavorite,
+    List<String>? examples,
+    Difficulty? difficulty,
+    List<String>? tags,
+    double? masteryScore,
+    ReviewStatus? reviewStatus,
+    WordDetails? details,
+    Map<String, CustomProperty>? customProperties,
+  }) {
+    return Word(
+      id: id ?? this.id,
+      word: word ?? this.word,
+      translation: translation ?? this.translation,
+      definition: definition ?? this.definition,
+      dateAdded: dateAdded ?? this.dateAdded,
+      lastReviewed: lastReviewed ?? this.lastReviewed,
+      isFavorite: isFavorite ?? this.isFavorite,
+      examples: examples ?? this.examples,
+      difficulty: difficulty ?? this.difficulty,
+      tags: tags ?? this.tags,
+      masteryScore: masteryScore ?? this.masteryScore,
+      reviewStatus: reviewStatus ?? this.reviewStatus,
+      details: details ?? this.details,
+      customProperties: customProperties ?? this.customProperties,
+    );
+  }
+
   // Validation method
   void validate() {
     if (word.isEmpty) {
