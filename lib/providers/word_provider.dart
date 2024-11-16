@@ -138,20 +138,6 @@ class WordProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // Custom Property Operations
-  Future<void> addCustomProperty(
-    String wordId,
-    String name,
-    dynamic value,
-    String type,
-  ) async {
-    final wordIndex = _words.indexWhere((w) => w.id == wordId);
-    if (wordIndex == -1) return;
-
-    final updatedWord = _words[wordIndex].addCustomProperty(name, value, type);
-    await updateWord(updatedWord);
-  }
-
   // Filter Operations
   Future<void> loadFavorites() async {
     _setLoading(true);

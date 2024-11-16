@@ -4,6 +4,8 @@ import 'validation_exception.dart';
 
 class WordDetails {
   final List<Definition> definitions;
+  final List<String> examples;
+
   final List<String> synonyms;
   final List<String> antonyms;
   final String pronunciation;
@@ -16,6 +18,7 @@ class WordDetails {
 
   WordDetails({
     this.definitions = const [],
+    this.examples = const [],
     this.synonyms = const [],
     this.antonyms = const [],
     this.pronunciation = '',
@@ -28,6 +31,7 @@ class WordDetails {
   });
   WordDetails copyWith({
     List<Definition>? definitions,
+    List<String>? examples,
     List<String>? synonyms,
     List<String>? antonyms,
     String? pronunciation,
@@ -40,6 +44,7 @@ class WordDetails {
   }) {
     return WordDetails(
       definitions: definitions ?? this.definitions,
+      examples: examples ?? this.examples,
       synonyms: synonyms ?? this.synonyms,
       antonyms: antonyms ?? this.antonyms,
       pronunciation: pronunciation ?? this.pronunciation,
@@ -60,14 +65,21 @@ class WordDetails {
       throw ValidationException('Invalid image URL');
     }
 
-    definitions.forEach((def) => def.validate());
-    customProperties.values.forEach((prop) => prop.validate());
+    for (var def in definitions) {
+      def.validate();
+    }
+
+    // Validate custom properties
+    for (var prop in customProperties.values) {
+      prop.validate();
+    }
   }
 
   Map<String, dynamic> toFirestore() {
     validate();
     return {
       'definitions': definitions.map((d) => d.toFirestore()).toList(),
+      'examples': examples,
       'synonyms': synonyms,
       'antonyms': antonyms,
       'pronunciation': pronunciation,
@@ -87,6 +99,7 @@ class WordDetails {
               ?.map((d) => Definition.fromFirestore(d))
               .toList() ??
           [],
+      examples: List<String>.from(data['examples'] ?? []),
       synonyms: List<String>.from(data['synonyms'] ?? []),
       antonyms: List<String>.from(data['antonyms'] ?? []),
       pronunciation: data['pronunciation'] ?? '',
@@ -105,5 +118,12 @@ class WordDetails {
 
     details.validate();
     return details;
+  }
+// Helper method to add custom property
+  WordDetails addCustomProperty(String name, dynamic value, String type) {
+    final newProperties = Map<String, CustomProperty>.from(customProperties);
+    newProperties[name] = CustomProperty(name: name, value: value, type: type);
+
+    return WordDetails();
   }
 }

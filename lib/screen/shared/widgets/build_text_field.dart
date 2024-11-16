@@ -5,6 +5,7 @@ Widget buildModernTextField(
   BuildContext context, {
   required String label,
   required String hint,
+  String? initialValue,
   Widget? suffix,
   int maxLines = 1,
   TextEditingController? controller,
@@ -30,6 +31,7 @@ Widget buildModernTextField(
           ),
         ),
       TextFormField(
+        initialValue: initialValue,
         maxLines: maxLines,
         controller: controller,
         keyboardType: keyboardType,

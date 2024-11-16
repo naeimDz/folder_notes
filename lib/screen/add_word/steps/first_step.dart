@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_lab/screen/shared/widgets/build_text_field.dart';
+import 'package:provider/provider.dart';
 import '../../../providers/word_form_provider.dart';
 import '../widgets/step_container.dart';
 
@@ -19,6 +20,9 @@ class FirstStepForm extends StatelessWidget {
       child: Column(
         children: [
           buildModernTextField(
+            initialValue: context.read<WordFormProvider>().state.wordData?.word,
+            onChanged: (value) =>
+                context.read<WordFormProvider>().updateWord(value),
             context,
             label: 'Word',
             hint: 'Enter the word',
@@ -31,6 +35,10 @@ class FirstStepForm extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           buildModernTextField(
+            initialValue:
+                context.read<WordFormProvider>().state.wordData?.translation,
+            onChanged: (value) =>
+                context.read<WordFormProvider>().updateTranslation(value),
             context,
             label: 'Translation',
             hint: 'Enter translation',
@@ -43,6 +51,10 @@ class FirstStepForm extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           buildModernTextField(
+            initialValue:
+                context.read<WordFormProvider>().state.wordData?.pronunciation,
+            onChanged: (value) =>
+                context.read<WordFormProvider>().updatePronunciation(value),
             context,
             label: 'Pronunciation',
             hint: 'Describe how the word is pronounced',
