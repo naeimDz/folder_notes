@@ -121,6 +121,15 @@ class Word {
     };
   }
 
+  factory Word.empty() {
+    return Word(
+        id: "id",
+        word: "word",
+        translation: "",
+        definition: "definition",
+        dateAdded: DateTime.now());
+  }
+
   // Factory constructor from Firestore
   factory Word.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;

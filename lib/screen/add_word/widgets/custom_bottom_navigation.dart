@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../providers/word_form_provider.dart';
+import 'package:my_lab/providers/word_form_provider.dart';
 
 class CustomBottomNavigationBar extends StatelessWidget {
   final WordFormState state;

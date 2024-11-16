@@ -11,13 +11,6 @@ class WordFormProvider extends ChangeNotifier {
     _state = _state.copyWith(currentStep: step);
     notifyListeners();
   }
-
-  void markStepComplete(int step) {
-    final newCompletedSteps = Map<int, bool>.from(_state.completedSteps);
-    newCompletedSteps[step] = true;
-    _state = _state.copyWith(completedSteps: newCompletedSteps);
-    notifyListeners();
-  }
 }
 
 class WordFormState {

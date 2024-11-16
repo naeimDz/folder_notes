@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:my_lab/providers/word_form_provider.dart';
 import 'package:my_lab/screen/add_word/widgets/step_container.dart';
 import 'package:my_lab/screen/shared/widgets/build_text_field.dart';
+
+import 'package:my_lab/providers/word_form_provider.dart';
 
 class ThirdStepForm extends StatelessWidget {
   final WordFormState state;
