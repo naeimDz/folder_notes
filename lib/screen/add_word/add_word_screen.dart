@@ -4,6 +4,7 @@ import 'package:my_lab/screen/add_word/steps/third_step.dart';
 import 'package:my_lab/screen/shared/widgets/custom_sliver_app_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:my_lab/providers/word_form_provider.dart';
+import '../../providers/word_provider.dart';
 import 'steps/first_step.dart';
 import 'widgets/custom_bottom_navigation.dart';
 import 'widgets/step_progress_indicator.dart';
@@ -59,28 +60,6 @@ class _AddWordScreenState extends State<AddWordScreen> {
     );
   }
 
-  bool _validateCurrentStep(int step) {
-    return _formKeys[step].currentState?.validate() ?? false;
-  }
-
-  void _handleNavigation(WordFormProvider provider, {required bool isForward}) {
-    final currentStep = provider.state.currentStep;
-
-    if (isForward) {
-      if (currentStep < _kTotalSteps - 1 && _validateCurrentStep(currentStep)) {
-        final nextStep = currentStep + 1;
-        provider.updateStep(nextStep);
-        _navigateToPage(nextStep);
-      }
-    } else {
-      if (currentStep > 0) {
-        final previousStep = currentStep - 1;
-        provider.updateStep(previousStep);
-        _navigateToPage(previousStep);
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -88,13 +67,27 @@ class _AddWordScreenState extends State<AddWordScreen> {
       child: Consumer<WordFormProvider>(
         builder: (context, formProvider, _) {
           return Scaffold(
+            //floatingActionButton: Text("add FAB for save word!!!"),
             bottomNavigationBar: CustomBottomNavigationBar(
-              state: formProvider.state,
-              onBackPressed: () =>
-                  _handleNavigation(formProvider, isForward: false),
-              onNextPressed: () =>
-                  _handleNavigation(formProvider, isForward: true),
-            ),
+                step: formProvider.state.currentStep,
+                onBackPressed: () {
+                  formProvider.navigateBackward();
+                  _navigateToPage(formProvider.state.currentStep);
+                },
+                onNextPressed: () {
+                  if (formProvider.state.currentStep == 2) {
+                    print("create the word!!!!");
+
+                    final newWord =
+                        context.read<WordFormProvider>().getWordData();
+                    print(newWord?.toFirestore());
+                    // context.read<WordProvider>().addWord(newWord!);
+                    print("dooone thewoed added");
+                  } else {
+                    formProvider.navigateForward();
+                    _navigateToPage(formProvider.state.currentStep);
+                  }
+                }),
             body: CustomScrollView(
               slivers: [
                 _buildAppBar(context),
@@ -110,17 +103,15 @@ class _AddWordScreenState extends State<AddWordScreen> {
                           children: [
                             Form(
                               key: _formKeys[0],
-                              child: FirstStepForm(
-                                state: formProvider.state,
-                              ),
+                              child: FirstStepForm(),
                             ),
                             Form(
                               key: _formKeys[1],
-                              child: SecondStepForm(state: formProvider.state),
+                              child: SecondStepForm(),
                             ),
                             Form(
                               key: _formKeys[2],
-                              child: ThirdStepForm(state: formProvider.state),
+                              child: ThirdStepForm(),
                             ),
                           ],
                         ),

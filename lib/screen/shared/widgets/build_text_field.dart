@@ -12,10 +12,12 @@ Widget buildModernTextField(
   TextInputType keyboardType = TextInputType.text,
   String? Function(String?)? validator,
   void Function(String)? onChanged,
+  void Function(String?)? onFieldSubmitted,
   void Function()? onEditingComplete,
   FocusNode? focusNode,
   bool isPassword = false,
 }) {
+  print("object///////////////////*****************");
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
@@ -38,7 +40,11 @@ Widget buildModernTextField(
         obscureText: isPassword,
         validator: validator,
         onChanged: onChanged,
-        onEditingComplete: onEditingComplete,
+        onFieldSubmitted: onFieldSubmitted,
+        onEditingComplete: onEditingComplete ??
+            () => FocusScope.of(context)
+                .nextFocus(), // Dismiss the keyboard after the user is done
+
         focusNode: focusNode,
         decoration: InputDecoration(
           hintText: hint,

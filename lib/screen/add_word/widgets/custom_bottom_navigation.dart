@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:my_lab/providers/word_form_provider.dart';
 
 class CustomBottomNavigationBar extends StatelessWidget {
-  final WordFormState state;
   final VoidCallback onBackPressed;
   final VoidCallback onNextPressed;
+  final int step;
 
-  const CustomBottomNavigationBar({
-    super.key,
-    required this.state,
-    required this.onBackPressed,
-    required this.onNextPressed,
-  });
+  const CustomBottomNavigationBar(
+      {super.key,
+      required this.onBackPressed,
+      required this.onNextPressed,
+      required this.step});
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +28,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
       child: SafeArea(
         child: Row(
           children: [
-            if (state.currentStep > 0) ...[
+            if (step > 0) ...[
               TextButton.icon(
                 onPressed: onBackPressed,
                 icon: const Icon(Icons.arrow_back),
@@ -46,12 +44,10 @@ class CustomBottomNavigationBar extends StatelessWidget {
               child: ElevatedButton.icon(
                 onPressed: onNextPressed,
                 icon: Icon(
-                  state.currentStep == 3 - 1
-                      ? Icons.check
-                      : Icons.arrow_forward,
+                  step == 3 - 1 ? Icons.check : Icons.arrow_forward,
                 ),
                 label: Text(
-                  state.currentStep == 3 - 1 ? 'Save Word' : 'Next Step',
+                  step == 3 - 1 ? 'Save Word' : 'Next Step',
                 ),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),

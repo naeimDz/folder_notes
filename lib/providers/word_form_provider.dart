@@ -13,6 +13,40 @@ class WordFormProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updateStepIfNeeded(int step) {
+    if (_state.currentStep != step) {
+      _state = _state.copyWith(currentStep: step);
+      notifyListeners();
+    }
+  }
+
+  // Handle the navigation based on the step
+  void _handleNavigation({required bool isForward}) {
+    final currentStep = _state.currentStep;
+
+    if (isForward) {
+      if (currentStep < 3 - 1) {
+        final nextStep = currentStep + 1;
+        updateStep(nextStep);
+      }
+    } else {
+      if (currentStep > 0) {
+        final previousStep = currentStep - 1;
+        updateStep(previousStep);
+      }
+    }
+  }
+
+  // Forward navigation
+  void navigateForward() {
+    _handleNavigation(isForward: true);
+  }
+
+  // Backward navigation
+  void navigateBackward() {
+    _handleNavigation(isForward: false);
+  }
+
   void updateWord(String word) {
     final currentWord = state.wordData ?? Word.empty();
     final updatedWord = currentWord.copyWith(word: word);
@@ -34,6 +68,21 @@ class WordFormProvider extends ChangeNotifier {
   // Private Helper Methods
   void _updateWordData(Word updatedWord) {
     _state = _state.copyWith(wordData: updatedWord);
+    notifyListeners();
+  }
+
+  // Form Completion
+  Map<String, dynamic>? getFormData() {
+    return _state.wordData?.toFirestore();
+  }
+
+  // Form Completion
+  Word? getWordData() {
+    return _state.wordData;
+  }
+
+  void reset() {
+    _state = WordFormState();
     notifyListeners();
   }
 }

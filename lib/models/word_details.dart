@@ -57,6 +57,15 @@ class WordDetails {
     );
   }
 
+  factory WordDetails.empty() {
+    return WordDetails(
+        antonyms: [],
+        synonyms: [],
+        examples: [],
+        partOfSpeech: "",
+        usageNotes: "");
+  }
+
   void validate() {
     if (audioUrl != null && !Uri.tryParse(audioUrl!)!.isAbsolute) {
       throw ValidationException('Invalid audio URL');
