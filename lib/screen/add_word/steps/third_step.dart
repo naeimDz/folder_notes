@@ -26,9 +26,9 @@ class ThirdStepForm extends StatelessWidget {
                   onFieldSubmitted: (value) => context
                       .read<WordFormProvider>()
                       .updateDetailWord(synonyms: [value ?? ""]),
-                  /*    onChanged: (value) => context
+                  onChanged: (value) => context
                       .read<WordFormProvider>()
-                      .updateDetailWord(synonyms: [value]),*/
+                      .updateDetailWord(synonyms: [value]),
                   context,
                   label: "Synonyms",
                   hint: "List words that have the same or similar meaning.",

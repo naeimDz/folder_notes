@@ -76,13 +76,10 @@ class _AddWordScreenState extends State<AddWordScreen> {
                 },
                 onNextPressed: () {
                   if (formProvider.state.currentStep == 2) {
-                    print("create the word!!!!");
-
                     final newWord =
                         context.read<WordFormProvider>().getWordData();
-                    print(newWord?.toFirestore());
-                    // context.read<WordProvider>().addWord(newWord!);
-                    print("dooone the word added");
+                    context.read<WordProvider>().addWord(newWord!);
+                    Navigator.pushNamed(context, "/home");
                   } else {
                     formProvider.navigateForward();
                     _navigateToPage(formProvider.state.currentStep);

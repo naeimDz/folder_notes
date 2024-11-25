@@ -112,7 +112,7 @@ class Word {
     return Word(
         id: "id",
         word: "word",
-        translation: "",
+        translation: "translation",
         definition: "definition",
         pronunciation: "pronunciation",
         details: WordDetails.empty(),

@@ -208,7 +208,6 @@ class WordProvider with ChangeNotifier {
 
   // Load words from Firebase
   Future<void> getWords() async {
-    print("object");
     _controller.getWords().listen(
       (words) {
         _words = words;

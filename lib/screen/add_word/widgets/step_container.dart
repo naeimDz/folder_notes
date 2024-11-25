@@ -63,7 +63,8 @@ class StepContainer extends StatelessWidget {
               ),
               SizedBox(height: 16),
               if (currentStep == 0)
-                Text("***Please complete all required fields to proceed."),
+                Text(
+                    "**Please complete all of the following fields to proceed."),
               if (currentStep != 0)
                 Text(
                     "This step is optional. You can skip it or provide additional details."),
