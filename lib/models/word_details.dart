@@ -5,7 +5,7 @@ import 'validation_exception.dart';
 class WordDetails {
   final List<Definition> definitions;
   final List<String> examples;
-
+  final List<String> definition;
   final List<String> synonyms;
   final List<String> antonyms;
   final String pronunciation;
@@ -19,6 +19,7 @@ class WordDetails {
   WordDetails({
     this.definitions = const [],
     this.examples = const [],
+    this.definition = const [],
     this.synonyms = const [],
     this.antonyms = const [],
     this.pronunciation = '',
@@ -32,6 +33,7 @@ class WordDetails {
   WordDetails copyWith({
     List<Definition>? definitions,
     List<String>? examples,
+    List<String>? definition,
     List<String>? synonyms,
     List<String>? antonyms,
     String? pronunciation,
@@ -44,6 +46,7 @@ class WordDetails {
   }) {
     return WordDetails(
       definitions: definitions ?? this.definitions,
+      definition: definition ?? this.definition,
       examples: examples ?? this.examples,
       synonyms: synonyms ?? this.synonyms,
       antonyms: antonyms ?? this.antonyms,
@@ -59,9 +62,10 @@ class WordDetails {
 
   factory WordDetails.empty() {
     return WordDetails(
-        antonyms: [],
-        synonyms: [],
-        examples: [],
+        antonyms: [""],
+        synonyms: [""],
+        examples: [""],
+        definition: [""],
         partOfSpeech: "",
         usageNotes: "");
   }
@@ -89,6 +93,7 @@ class WordDetails {
     return {
       'definitions': definitions.map((d) => d.toFirestore()).toList(),
       'examples': examples,
+      'definition': definition,
       'synonyms': synonyms,
       'antonyms': antonyms,
       'pronunciation': pronunciation,
@@ -109,6 +114,7 @@ class WordDetails {
               .toList() ??
           [],
       examples: List<String>.from(data['examples'] ?? []),
+      definition: List<String>.from(data['definition'] ?? []),
       synonyms: List<String>.from(data['synonyms'] ?? []),
       antonyms: List<String>.from(data['antonyms'] ?? []),
       pronunciation: data['pronunciation'] ?? '',

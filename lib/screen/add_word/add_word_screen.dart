@@ -82,7 +82,7 @@ class _AddWordScreenState extends State<AddWordScreen> {
                         context.read<WordFormProvider>().getWordData();
                     print(newWord?.toFirestore());
                     // context.read<WordProvider>().addWord(newWord!);
-                    print("dooone thewoed added");
+                    print("dooone the word added");
                   } else {
                     formProvider.navigateForward();
                     _navigateToPage(formProvider.state.currentStep);

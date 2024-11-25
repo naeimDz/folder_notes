@@ -7,13 +7,11 @@ class WordFormProvider extends ChangeNotifier {
   WordFormState _state = WordFormState();
 
   WordFormState get state => _state;
+  Word get _currentWord => _state.wordData ?? Word.empty();
+  WordDetails get _currentDetails => _state.wordDetails ?? WordDetails.empty();
+  int get maxSteps => 3;
 
   void updateStep(int step) {
-    _state = _state.copyWith(currentStep: step);
-    notifyListeners();
-  }
-
-  void updateStepIfNeeded(int step) {
     if (_state.currentStep != step) {
       _state = _state.copyWith(currentStep: step);
       notifyListeners();
@@ -22,18 +20,9 @@ class WordFormProvider extends ChangeNotifier {
 
   // Handle the navigation based on the step
   void _handleNavigation({required bool isForward}) {
-    final currentStep = _state.currentStep;
-
-    if (isForward) {
-      if (currentStep < 3 - 1) {
-        final nextStep = currentStep + 1;
-        updateStep(nextStep);
-      }
-    } else {
-      if (currentStep > 0) {
-        final previousStep = currentStep - 1;
-        updateStep(previousStep);
-      }
+    final newStep = _state.currentStep + (isForward ? 1 : -1);
+    if (newStep >= 0 && newStep < maxSteps) {
+      updateStep(newStep);
     }
   }
 
@@ -54,15 +43,37 @@ class WordFormProvider extends ChangeNotifier {
   }
 
   void updateTranslation(String translation) {
-    final currentWord = _state.wordData ?? Word.empty();
-    final updatedWord = currentWord.copyWith(translation: translation);
+    final updatedWord = _currentWord.copyWith(translation: translation);
     _updateWordData(updatedWord);
   }
 
   void updatePronunciation(String pronunciation) {
-    final currentWord = _state.wordData ?? Word.empty();
-    final updatedWord = currentWord.copyWith(pronunciation: pronunciation);
+    final updatedWord = _currentWord.copyWith(pronunciation: pronunciation);
     _updateWordData(updatedWord);
+  }
+
+  void updateDetailWord({
+    String? usageNote,
+    List<String>? synonyms,
+    List<String>? antonyms,
+    List<String>? examples,
+    List<String>? definition,
+  }) {
+    final updatedDetails = _currentDetails.copyWith(
+      synonyms: synonyms ?? _currentDetails.synonyms,
+      antonyms: antonyms ?? _currentDetails.antonyms,
+      examples: examples ?? _currentDetails.examples,
+      definition: definition ?? _currentDetails.definition,
+      usageNotes: usageNote ?? _currentDetails.usageNotes,
+    );
+    if (updatedDetails != _currentDetails) {
+      _state = _state.copyWith(
+        wordDetails: updatedDetails,
+        wordData: _currentWord.copyWith(details: updatedDetails),
+      );
+    }
+
+    notifyListeners();
   }
 
   // Private Helper Methods
@@ -72,17 +83,25 @@ class WordFormProvider extends ChangeNotifier {
   }
 
   // Form Completion
-  Map<String, dynamic>? getFormData() {
-    return _state.wordData?.toFirestore();
-  }
-
-  // Form Completion
   Word? getWordData() {
-    return _state.wordData;
+    return _currentWord;
   }
 
-  void reset() {
-    _state = WordFormState();
+  void _setError(String? error) {
+    _state = _state.copyWith(error: error);
+    notifyListeners();
+  }
+
+  void reset({bool resetAll = true}) {
+    if (resetAll) {
+      _state = WordFormState();
+    } else {
+      _state = _state.copyWith(
+        currentStep: 0,
+        wordData: null,
+        wordDetails: null,
+      );
+    }
     notifyListeners();
   }
 }

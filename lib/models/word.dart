@@ -115,6 +115,7 @@ class Word {
         translation: "",
         definition: "definition",
         pronunciation: "pronunciation",
+        details: WordDetails.empty(),
         dateAdded: DateTime.now());
   }
 
