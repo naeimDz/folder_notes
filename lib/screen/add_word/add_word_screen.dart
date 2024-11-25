@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:my_lab/providers/form_state_provider.dart';
 import 'package:my_lab/screen/add_word/steps/second_step.dart';
 import 'package:my_lab/screen/add_word/steps/third_step.dart';
 import 'package:my_lab/screen/shared/widgets/custom_sliver_app_bar.dart';
 import 'package:provider/provider.dart';
-import 'package:my_lab/providers/word_form_provider.dart';
-import '../../providers/word_provider.dart';
 import 'steps/first_step.dart';
 import 'widgets/custom_bottom_navigation.dart';
 import 'widgets/step_progress_indicator.dart';
@@ -39,7 +38,7 @@ class _AddWordScreenState extends State<AddWordScreen> {
 
   void _onPageChanged() {
     final currentPage = _pageController.page?.round() ?? 0;
-    final provider = context.read<WordFormProvider>();
+    final provider = context.read<FormStateProvider>();
     if (provider.state.currentStep != currentPage) {
       provider.updateStep(currentPage);
     }
@@ -62,70 +61,71 @@ class _AddWordScreenState extends State<AddWordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => WordFormProvider(),
-      child: Consumer<WordFormProvider>(
-        builder: (context, formProvider, _) {
-          return Scaffold(
-            //floatingActionButton: Text("add FAB for save word!!!"),
-            bottomNavigationBar: CustomBottomNavigationBar(
-                step: formProvider.state.currentStep,
-                onBackPressed: () {
-                  formProvider.navigateBackward();
-                  _navigateToPage(formProvider.state.currentStep);
-                },
-                onNextPressed: () {
-                  if (formProvider.state.currentStep == 2) {
-                    final newWord =
-                        context.read<WordFormProvider>().getWordData();
-                    context.read<WordProvider>().addWord(newWord!);
-                    Navigator.pushNamed(context, "/home");
-                  } else {
-                    formProvider.navigateForward();
-                    _navigateToPage(formProvider.state.currentStep);
-                  }
-                }),
-            body: CustomScrollView(
-              slivers: [
-                _buildAppBar(context),
-                SliverFillRemaining(
-                  child: Column(
+    return Scaffold(
+      //floatingActionButton: Text("add FAB for save word!!!"),
+      bottomNavigationBar: Consumer<FormStateProvider>(
+        builder: (context, provider, child) {
+          return CustomBottomNavigationBar(
+            step: provider.state.currentStep,
+            onBackPressed: () {
+              provider.navigateBackward();
+              _navigateToPage(provider.state.currentStep);
+            },
+            onNextPressed: () {
+              if (provider.state.isLastStep) {
+                final newWord = context.read<FormStateProvider>().getWordData();
+                print(newWord?.toFirestore() ?? "miss data");
+              } else {
+                provider.navigateForward();
+                _navigateToPage(provider.state.currentStep);
+              }
+            },
+          );
+        },
+      ),
+      body: CustomScrollView(
+        slivers: [
+          _buildAppBar(context),
+          SliverFillRemaining(
+            child: Column(
+              children: [
+                Consumer<FormStateProvider>(
+                  builder: (context, provider, child) {
+                    return StepProgressIndicator(
+                        currentStep: provider.state.currentStep);
+                  },
+                ),
+                Expanded(
+                  child: PageView(
+                    controller: _pageController,
+                    physics: const NeverScrollableScrollPhysics(),
                     children: [
-                      StepProgressIndicator(
-                          currentStep: formProvider.state.currentStep),
-                      Expanded(
-                        child: PageView(
-                          controller: _pageController,
-                          physics: const NeverScrollableScrollPhysics(),
-                          children: [
-                            Form(
-                              key: _formKeys[0],
-                              child: FirstStepForm(),
-                            ),
-                            Form(
-                              key: _formKeys[1],
-                              child: SecondStepForm(),
-                            ),
-                            Form(
-                              key: _formKeys[2],
-                              child: ThirdStepForm(),
-                            ),
-                          ],
-                        ),
+                      Form(
+                        key: _formKeys[0],
+                        child: FirstStepForm(),
+                      ),
+                      Form(
+                        key: _formKeys[1],
+                        child: SecondStepForm(),
+                      ),
+                      Form(
+                        key: _formKeys[2],
+                        child: ThirdStepForm(),
                       ),
                     ],
                   ),
                 ),
               ],
             ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }
 
   CustomSliverAppBar _buildAppBar(BuildContext context) {
     final theme = Theme.of(context);
+    print('CustomSliverAppBar ui!!!!!!!');
     return CustomSliverAppBar(
       gradientColors: [
         theme.colorScheme.primary,

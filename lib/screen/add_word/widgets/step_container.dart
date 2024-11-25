@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:my_lab/providers/form_state_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:my_lab/providers/word_form_provider.dart';
 
 class StepContainer extends StatelessWidget {
   final int stepIndex;
@@ -16,7 +16,7 @@ class StepContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Selector<WordFormProvider, (int, bool?)>(
+    return Selector<FormStateProvider, (int, bool?)>(
       selector: (_, provider) => (
         provider.state.currentStep,
         provider.state.completedSteps[stepIndex] ?? false

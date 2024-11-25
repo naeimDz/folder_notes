@@ -110,11 +110,11 @@ class Word {
 
   factory Word.empty() {
     return Word(
-        id: "id",
-        word: "word",
-        translation: "translation",
-        definition: "definition",
-        pronunciation: "pronunciation",
+        id: "",
+        word: "",
+        translation: "",
+        definition: "",
+        pronunciation: "",
         details: WordDetails.empty(),
         dateAdded: DateTime.now());
   }

@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:my_lab/core/app_theme.dart';
 import 'package:my_lab/core/routes/routes.dart';
 import 'package:my_lab/firebase_options.dart';
+import 'package:my_lab/providers/form_state_provider.dart';
 import 'package:my_lab/providers/theme_provider.dart';
-import 'package:my_lab/providers/word_form_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -31,7 +31,7 @@ void main() async {
       fallbackLocale: const Locale('en'),
       child: MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => WordFormProvider()),
+          ChangeNotifierProvider(create: (_) => FormStateProvider()),
           ChangeNotifierProvider(create: (_) => WordProvider()),
           ChangeNotifierProvider(create: (_) => MetadataProvider()),
           Provider<SharedPreferences>.value(value: prefs),
