@@ -73,8 +73,8 @@ class _AddWordScreenState extends State<AddWordScreen> {
             },
             onNextPressed: () {
               if (provider.state.isLastStep) {
-                final newWord = context.read<FormStateProvider>().getWordData();
-                print(newWord?.toFirestore() ?? "miss data");
+                //    final newWord = context.read<FormStateProvider>().getWordData();
+                //     context.read<WordProvider>().addWord();
               } else {
                 provider.navigateForward();
                 _navigateToPage(provider.state.currentStep);

@@ -187,7 +187,7 @@ class WordProvider with ChangeNotifier {
   // Search and filter methods
   List<Word> filterByTags(List<String> tags) {
     return _words
-        .where((word) => tags.every((tag) => word.tags.contains(tag)))
+        .where((word) => tags.every((tag) => word.details!.tags.contains(tag)))
         .toList();
   }
 

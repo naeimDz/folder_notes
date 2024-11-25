@@ -90,7 +90,7 @@ class WordOfTheDayWidget extends StatelessWidget {
                     ),
                     SizedBox(height: 8),
                     Text(
-                      word.details?.pronunciation ?? "",
+                      word.pronunciation,
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.grey[600],
@@ -99,16 +99,17 @@ class WordOfTheDayWidget extends StatelessWidget {
                     ),
                     SizedBox(height: 16),
                     Text(
-                      word.definition,
+                      word.details?.definition ?? "",
                       style: TextStyle(fontSize: 16),
                     ),
                     SizedBox(height: 16),
                     Row(
-                      children: word.tags
-                          .map((tag) => CustomChip(
-                                label: tag,
-                              ))
-                          .toList(),
+                      children: word.details?.tags
+                              .map((tag) => CustomChip(
+                                    label: tag,
+                                  ))
+                              .toList() ??
+                          [],
                     ),
                   ],
                 ),

@@ -1,12 +1,12 @@
 import 'package:flutter/foundation.dart';
-import 'package:my_lab/models/the_word.dart';
 
+import '../models/word.dart';
 import '../models/word_form_state.dart';
 
 class FormStateProvider with ChangeNotifier {
   WordFormState _state = WordFormState();
   WordFormState get state => _state;
-  TheWord get _currentWord => _state.theWord ?? TheWord.empty();
+  Word get _currentWord => _state.wordData ?? Word.empty();
 
   int get maxSteps => 3;
 
@@ -58,13 +58,13 @@ class FormStateProvider with ChangeNotifier {
   void updateCoreWord(
       {String? word, String? translation, String? pronunciation}) {
     final updatedWord = _currentWord.copyWith(
-      word: word ?? _state.theWord?.word,
-      translation: translation ?? _state.theWord?.translation,
-      pronunciation: pronunciation ?? _state.theWord?.pronunciation,
+      word: word ?? _currentWord.word,
+      translation: translation ?? _currentWord.translation,
+      pronunciation: pronunciation ?? _currentWord.pronunciation,
     );
 
     if (updatedWord != _currentWord) {
-      _state = _state.copyWith(theWord: updatedWord);
+      _state = _state.copyWith(wordData: updatedWord);
       notifyListeners();
     }
   }
@@ -73,33 +73,32 @@ class FormStateProvider with ChangeNotifier {
     String? contextNotes,
     List<String>? synonyms,
     List<String>? antonyms,
-    List<String>? examples,
-    List<String>? definitions,
+    List<String>? tags,
+    String? example,
+    String? definition,
   }) {
-    final updatedDetails = _currentWord.copyWith(
-      synonyms: synonyms ?? _currentWord.synonyms,
-      antonyms: antonyms ?? _currentWord.antonyms,
-      examples: examples ?? _currentWord.examples,
-      definitions: definitions ?? _currentWord.definitions,
-      contextNotes: contextNotes ?? _currentWord.contextNotes,
+    final updatedWord = _currentWord.details?.copyWith(
+      synonyms: synonyms ?? _currentWord.details?.synonyms,
+      antonyms: antonyms ?? _currentWord.details?.antonyms,
+      tags: tags ?? _currentWord.details?.tags,
+      example: example ?? _currentWord.details?.example,
+      definition: definition ?? _currentWord.details?.definition,
+      contextNotes: contextNotes ?? _currentWord.details?.contextNotes,
     );
-    if (updatedDetails != _currentWord) {
-      _state = _state.copyWith(
-        theWord: updatedDetails,
-      );
+    if (updatedWord != _currentWord.details) {
+      _updateWordData(_currentWord.copyWith(details: updatedWord));
+      notifyListeners();
     }
-
-    notifyListeners();
   }
 
   // Private Helper Methods
-  void _updateWordData(TheWord updatedWord) {
-    _state = _state.copyWith(theWord: updatedWord);
+  void _updateWordData(Word updatedWord) {
+    _state = _state.copyWith(wordData: updatedWord);
     notifyListeners();
   }
 
   // Form Completion
-  TheWord? getWordData() {
+  Word? getWordData() {
     return _currentWord;
   }
 

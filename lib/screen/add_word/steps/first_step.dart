@@ -18,7 +18,8 @@ class FirstStepForm extends StatelessWidget {
         children: [
           // Use Consumer for each field
           buildModernTextField(
-            initialValue: context.read<FormStateProvider>().state.theWord?.word,
+            initialValue:
+                context.read<FormStateProvider>().state.wordData?.word,
             onChanged: (value) {
               formProvider.updateCoreWord(word: value);
             },
@@ -31,7 +32,7 @@ class FirstStepForm extends StatelessWidget {
           const SizedBox(height: 16),
           buildModernTextField(
             initialValue:
-                context.read<FormStateProvider>().state.theWord?.translation,
+                context.read<FormStateProvider>().state.wordData?.translation,
             onChanged: (value) {
               formProvider.updateCoreWord(translation: value);
             },
@@ -43,7 +44,7 @@ class FirstStepForm extends StatelessWidget {
           const SizedBox(height: 16),
           buildModernTextField(
             initialValue:
-                context.read<FormStateProvider>().state.theWord?.pronunciation,
+                context.read<FormStateProvider>().state.wordData?.pronunciation,
             onChanged: (value) {
               formProvider.updateCoreWord(pronunciation: value);
             },

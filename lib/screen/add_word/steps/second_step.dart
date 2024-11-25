@@ -21,13 +21,14 @@ class SecondStepForm extends StatelessWidget {
             initialValue: context
                     .read<FormStateProvider>()
                     .state
-                    .theWord
-                    ?.definitions?[0] ??
+                    .wordData
+                    ?.details
+                    ?.definition ??
                 "",
             onChanged: (value) {
               context
                   .read<FormStateProvider>()
-                  .updateTheWordDetail(definitions: [value]);
+                  .updateTheWordDetail(definition: value);
             },
             context,
             label: 'Brief Definition',
@@ -36,13 +37,17 @@ class SecondStepForm extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           buildModernTextField(
-            initialValue:
-                context.read<FormStateProvider>().state.theWord?.examples?[0] ??
-                    "",
+            initialValue: context
+                    .read<FormStateProvider>()
+                    .state
+                    .wordData
+                    ?.details
+                    ?.example ??
+                "",
             onChanged: (value) {
               context
                   .read<FormStateProvider>()
-                  .updateTheWordDetail(examples: [value]);
+                  .updateTheWordDetail(example: value);
             },
             context,
             label: 'Example',
@@ -51,9 +56,13 @@ class SecondStepForm extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           buildModernTextField(
-            initialValue:
-                context.read<FormStateProvider>().state.theWord?.contextNotes ??
-                    "",
+            initialValue: context
+                    .read<FormStateProvider>()
+                    .state
+                    .wordData
+                    ?.details
+                    ?.contextNotes ??
+                "",
             onChanged: (value) {
               context
                   .read<FormStateProvider>()

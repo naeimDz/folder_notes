@@ -208,11 +208,10 @@ class _WordDetailScreenState extends State<WordDetailScreen>
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                    if (word.details?.pronunciation !=
-                                        null) ...[
+                                    ...[
                                       const SizedBox(height: 4),
                                       Text(
-                                        word.details!.pronunciation,
+                                        word.pronunciation,
                                         style: TextStyle(
                                           fontSize: 16,
                                           color: Colors.grey[600],
@@ -258,7 +257,7 @@ class _WordDetailScreenState extends State<WordDetailScreen>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          word.definition,
+                          word.details?.definition ?? "",
                           style: const TextStyle(fontSize: 16),
                         ),
                       ],
@@ -266,35 +265,29 @@ class _WordDetailScreenState extends State<WordDetailScreen>
                   ),
 
                   // Examples Section
-                  if (word.examples.isNotEmpty)
+                  if (word.details!.example.isNotEmpty)
                     _buildCustomCard(
                       title: "Examples",
                       backgroundColor: Colors.green[50],
                       showIfEmpty: false,
-                      child: Column(
-                        children: [
-                          ...(word.examples).map((example) {
-                            return Container(
-                              margin: const EdgeInsets.only(bottom: 16),
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: Colors.green[100]!,
-                                  width: 1,
-                                ),
-                              ),
-                              child: Text(
-                                example,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            );
-                          }),
-                        ],
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 16),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Colors.green[100]!,
+                            width: 1,
+                          ),
+                        ),
+                        child: Text(
+                          word.details!.example,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
                     ),
                   // Synonyms & Antonyms

@@ -18,13 +18,17 @@ class ThirdStepForm extends StatelessWidget {
       child: Column(
         children: [
           buildModernTextField(
-            initialValue:
-                context.read<FormStateProvider>().state.theWord?.synonyms?[0] ??
-                    "",
+            initialValue: context
+                    .read<FormStateProvider>()
+                    .state
+                    .wordData
+                    ?.details
+                    ?.synonyms[0] ??
+                "",
             onChanged: (value) {
               context
                   .read<FormStateProvider>()
-                  .updateTheWordDetail(examples: [value]);
+                  .updateTheWordDetail(synonyms: [value]);
             },
             context,
             label: "Synonyms",
@@ -32,13 +36,17 @@ class ThirdStepForm extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           buildModernTextField(
-            initialValue:
-                context.read<FormStateProvider>().state.theWord?.antonyms?[0] ??
-                    "",
+            initialValue: context
+                    .read<FormStateProvider>()
+                    .state
+                    .wordData
+                    ?.details
+                    ?.antonyms[0] ??
+                "",
             onChanged: (value) {
               context
                   .read<FormStateProvider>()
-                  .updateTheWordDetail(examples: [value]);
+                  .updateTheWordDetail(antonyms: [value]);
             },
             context,
             label: "Antonyms",
@@ -46,12 +54,17 @@ class ThirdStepForm extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           buildModernTextField(
-            initialValue:
-                context.read<FormStateProvider>().state.theWord?.tags?[0] ?? "",
+            initialValue: context
+                    .read<FormStateProvider>()
+                    .state
+                    .wordData
+                    ?.details
+                    ?.tags[0] ??
+                "",
             onChanged: (value) {
               context
                   .read<FormStateProvider>()
-                  .updateTheWordDetail(examples: [value]);
+                  .updateTheWordDetail(contextNotes: value);
             },
             context,
             label: "Tags",

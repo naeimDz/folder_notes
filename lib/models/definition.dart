@@ -1,16 +1,14 @@
 import 'custom_property.dart';
 import 'validation_exception.dart';
 
-class Definition {
+class ExtraDefinition {
   final String meaning;
   final String example;
-  final String? partOfSpeech;
   final Map<String, CustomProperty> customProperties;
 
-  Definition({
+  ExtraDefinition({
     required this.meaning,
     required this.example,
-    this.partOfSpeech,
     this.customProperties = const {},
   });
 
@@ -29,17 +27,15 @@ class Definition {
     return {
       'meaning': meaning,
       'example': example,
-      'partOfSpeech': partOfSpeech,
       'customProperties': customProperties
           .map((key, value) => MapEntry(key, value.toFirestore())),
     };
   }
 
-  factory Definition.fromFirestore(Map<String, dynamic> data) {
-    final definition = Definition(
+  factory ExtraDefinition.fromFirestore(Map<String, dynamic> data) {
+    final definition = ExtraDefinition(
       meaning: data['meaning'] ?? '',
       example: data['example'] ?? '',
-      partOfSpeech: data['partOfSpeech'],
       customProperties: (data['customProperties'] as Map<String, dynamic>?)
               ?.map((key, value) => MapEntry(
                     key,

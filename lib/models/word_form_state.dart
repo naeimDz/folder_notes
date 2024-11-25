@@ -1,12 +1,10 @@
-import 'package:my_lab/models/the_word.dart';
-
+import 'word.dart';
 import 'word_details.dart';
 
 class WordFormState {
   final int currentStep;
   final bool isLastStep;
-  final TheWord? theWord;
-  // final Word? wordData;
+  final Word? wordData;
   final WordDetails? wordDetails;
   final bool isLoading;
   final String? error;
@@ -15,8 +13,7 @@ class WordFormState {
   WordFormState({
     this.currentStep = 0,
     this.isLastStep = false,
-    //  this.wordData,
-    this.theWord,
+    this.wordData,
     this.wordDetails,
     this.isLoading = false,
     this.error,
@@ -27,8 +24,7 @@ class WordFormState {
     int? currentStep,
     bool? isLastStep,
     WordDetails? wordDetails,
-//    Word? wordData,
-    TheWord? theWord,
+    Word? wordData,
     bool? isLoading,
     String? error,
     Map<int, bool>? completedSteps,
@@ -36,8 +32,7 @@ class WordFormState {
     return WordFormState(
       currentStep: currentStep ?? this.currentStep,
       isLastStep: isLastStep ?? this.isLastStep,
-      //  wordData: wordData ?? this.wordData,
-      theWord: theWord ?? this.theWord,
+      wordData: wordData ?? this.wordData,
       wordDetails: wordDetails ?? this.wordDetails,
       isLoading: isLoading ?? this.isLoading,
       error: error ?? this.error,

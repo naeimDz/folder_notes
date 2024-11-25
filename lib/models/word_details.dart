@@ -3,57 +3,59 @@ import 'definition.dart';
 import 'validation_exception.dart';
 
 class WordDetails {
-  final List<Definition> definitions;
-  final List<String> examples;
-  final List<String> definition;
+  final List<ExtraDefinition> extraDefinitions;
+  final String definition;
+  final String example;
+  final List<String> tags;
   final List<String> synonyms;
   final List<String> antonyms;
-  final String pronunciation;
   final String partOfSpeech;
-  final String usageNotes;
-  final List<String> collocations;
+  final String contextNotes;
+  final List<String> lexicalRelations;
+
   final String? audioUrl;
   final String? imageUrl;
   final Map<String, CustomProperty> customProperties;
 
   WordDetails({
-    this.definitions = const [],
-    this.examples = const [],
-    this.definition = const [],
+    this.extraDefinitions = const [],
+    this.definition = "",
+    this.example = "",
+    this.tags = const [],
     this.synonyms = const [],
     this.antonyms = const [],
-    this.pronunciation = '',
     this.partOfSpeech = '',
-    this.usageNotes = '',
-    this.collocations = const [],
+    this.contextNotes = '',
+    this.lexicalRelations = const [],
     this.audioUrl,
     this.imageUrl,
     this.customProperties = const {},
   });
   WordDetails copyWith({
-    List<Definition>? definitions,
-    List<String>? examples,
-    List<String>? definition,
+    List<ExtraDefinition>? extraDefinitions,
+    String? example,
+    String? definition,
+    List<String>? tags,
     List<String>? synonyms,
     List<String>? antonyms,
     String? pronunciation,
     String? partOfSpeech,
-    String? usageNotes,
-    List<String>? collocations,
+    String? contextNotes,
+    List<String>? lexicalRelations,
     String? audioUrl,
     String? imageUrl,
     Map<String, CustomProperty>? customProperties,
   }) {
     return WordDetails(
-      definitions: definitions ?? this.definitions,
+      extraDefinitions: extraDefinitions ?? this.extraDefinitions,
       definition: definition ?? this.definition,
-      examples: examples ?? this.examples,
+      example: example ?? this.example,
+      tags: tags ?? this.tags,
       synonyms: synonyms ?? this.synonyms,
       antonyms: antonyms ?? this.antonyms,
-      pronunciation: pronunciation ?? this.pronunciation,
       partOfSpeech: partOfSpeech ?? this.partOfSpeech,
-      usageNotes: usageNotes ?? this.usageNotes,
-      collocations: collocations ?? this.collocations,
+      contextNotes: contextNotes ?? this.contextNotes,
+      lexicalRelations: lexicalRelations ?? this.lexicalRelations,
       audioUrl: audioUrl ?? this.audioUrl,
       imageUrl: imageUrl ?? this.imageUrl,
       customProperties: customProperties ?? this.customProperties,
@@ -62,12 +64,11 @@ class WordDetails {
 
   factory WordDetails.empty() {
     return WordDetails(
-        antonyms: [""],
-        synonyms: [""],
-        examples: [""],
-        definition: [""],
+        antonyms: [],
+        synonyms: [],
+        tags: [],
         partOfSpeech: "",
-        usageNotes: "");
+        contextNotes: "");
   }
 
   void validate() {
@@ -78,7 +79,7 @@ class WordDetails {
       throw ValidationException('Invalid image URL');
     }
 
-    for (var def in definitions) {
+    for (var def in extraDefinitions) {
       def.validate();
     }
 
@@ -91,15 +92,16 @@ class WordDetails {
   Map<String, dynamic> toFirestore() {
     validate();
     return {
-      'definitions': definitions.map((d) => d.toFirestore()).toList(),
-      'examples': examples,
+      'extraDefinitionss':
+          extraDefinitions.map((d) => d.toFirestore()).toList(),
       'definition': definition,
+      'example': example,
+      'tags': tags,
       'synonyms': synonyms,
       'antonyms': antonyms,
-      'pronunciation': pronunciation,
       'partOfSpeech': partOfSpeech,
-      'usageNotes': usageNotes,
-      'collocations': collocations,
+      'contextNotes': contextNotes,
+      'lexicalRelations': lexicalRelations,
       'audioUrl': audioUrl,
       'imageUrl': imageUrl,
       'customProperties': customProperties
@@ -109,18 +111,18 @@ class WordDetails {
 
   factory WordDetails.fromFirestore(Map<String, dynamic> data) {
     final details = WordDetails(
-      definitions: (data['definitions'] as List?)
-              ?.map((d) => Definition.fromFirestore(d))
+      extraDefinitions: (data['extraDefinitions'] as List?)
+              ?.map((d) => ExtraDefinition.fromFirestore(d))
               .toList() ??
           [],
-      examples: List<String>.from(data['examples'] ?? []),
-      definition: List<String>.from(data['definition'] ?? []),
+      definition: data['definition'] ?? '',
+      example: data['example'] ?? "",
+      tags: List<String>.from(data['tags'] ?? []),
       synonyms: List<String>.from(data['synonyms'] ?? []),
       antonyms: List<String>.from(data['antonyms'] ?? []),
-      pronunciation: data['pronunciation'] ?? '',
       partOfSpeech: data['partOfSpeech'] ?? '',
-      usageNotes: data['usageNotes'] ?? '',
-      collocations: List<String>.from(data['collocations'] ?? []),
+      contextNotes: data['contextNotes'] ?? '',
+      lexicalRelations: List<String>.from(data['lexicalRelations'] ?? []),
       audioUrl: data['audioUrl'],
       imageUrl: data['imageUrl'],
       customProperties: (data['customProperties'] as Map<String, dynamic>?)

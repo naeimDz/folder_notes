@@ -50,7 +50,7 @@ class WordCard extends StatelessWidget {
             const SizedBox(height: 12),
             _buildMasteryIndicator(),
           ],
-          if (config.showTags && word.tags.isNotEmpty) ...[
+          if (config.showTags && word.details!.tags.isNotEmpty) ...[
             const SizedBox(height: 12),
             _buildTags(),
           ],
@@ -220,7 +220,7 @@ class WordCard extends StatelessWidget {
 
   Widget _buildDefinition(ThemeData theme) {
     return Text(
-      word.definition,
+      word.details?.definition ?? "",
       style: theme.textTheme.bodyMedium?.copyWith(
         color: Colors.grey[600],
         fontStyle: FontStyle.italic,
@@ -261,7 +261,7 @@ class WordCard extends StatelessWidget {
     return Wrap(
       spacing: 4,
       runSpacing: 4,
-      children: word.tags.map((tag) => _buildTag(tag)).toList(),
+      children: word.details?.tags.map((tag) => _buildTag(tag)).toList() ?? [],
     );
   }
 

@@ -10,14 +10,13 @@ class Word {
   final String? id;
   final String word;
   final String translation;
-  final String definition;
+  final String pronunciation;
+
   final DateTime dateAdded;
   final DateTime? lastReviewed;
   final bool isFavorite;
-  final String? pronunciation;
-  final List<String> examples;
+
   final Difficulty difficulty;
-  final List<String> tags;
   final double masteryScore;
   final ReviewStatus reviewStatus;
   final WordDetails? details;
@@ -26,14 +25,11 @@ class Word {
     this.id,
     required this.word,
     required this.translation,
-    required this.definition,
     required this.dateAdded,
     this.pronunciation = "",
     this.lastReviewed,
     this.isFavorite = false,
-    this.examples = const [],
     this.difficulty = Difficulty.beginner,
-    this.tags = const [],
     this.masteryScore = 0.0,
     this.reviewStatus = ReviewStatus.newAdded,
     this.details,
@@ -44,13 +40,10 @@ class Word {
     String? word,
     String? translation,
     String? pronunciation,
-    String? definition,
     DateTime? dateAdded,
     DateTime? lastReviewed,
     bool? isFavorite,
-    List<String>? examples,
     Difficulty? difficulty,
-    List<String>? tags,
     double? masteryScore,
     ReviewStatus? reviewStatus,
     WordDetails? details,
@@ -60,13 +53,10 @@ class Word {
       word: word ?? this.word,
       translation: translation ?? this.translation,
       pronunciation: pronunciation ?? this.pronunciation,
-      definition: definition ?? this.definition,
       dateAdded: dateAdded ?? this.dateAdded,
       lastReviewed: lastReviewed ?? this.lastReviewed,
       isFavorite: isFavorite ?? this.isFavorite,
-      examples: examples ?? this.examples,
       difficulty: difficulty ?? this.difficulty,
-      tags: tags ?? this.tags,
       masteryScore: masteryScore ?? this.masteryScore,
       reviewStatus: reviewStatus ?? this.reviewStatus,
       details: details ?? this.details,
@@ -94,14 +84,11 @@ class Word {
       'word': word,
       'translation': translation,
       'pronunciation': pronunciation,
-      'definition': definition,
       'dateAdded': Timestamp.fromDate(dateAdded),
       'lastReviewed':
           lastReviewed != null ? Timestamp.fromDate(lastReviewed!) : null,
       'isFavorite': isFavorite,
-      'examples': examples,
       'difficulty': difficulty.toString(),
-      'tags': tags,
       'masteryScore': masteryScore,
       'reviewStatus': reviewStatus.toString(),
       'details': details?.toFirestore(),
@@ -113,7 +100,6 @@ class Word {
         id: "",
         word: "",
         translation: "",
-        definition: "",
         pronunciation: "",
         details: WordDetails.empty(),
         dateAdded: DateTime.now());
@@ -128,18 +114,15 @@ class Word {
       word: data['word'] ?? '',
       translation: data['translation'] ?? '',
       pronunciation: data['pronunciation'] ?? '',
-      definition: data['definition'] ?? '',
       dateAdded: (data['dateAdded'] as Timestamp).toDate(),
       lastReviewed: data['lastReviewed'] != null
           ? (data['lastReviewed'] as Timestamp).toDate()
           : null,
       isFavorite: data['isFavorite'] ?? false,
-      examples: List<String>.from(data['examples'] ?? []),
       difficulty: Difficulty.values.firstWhere(
         (e) => e.toString() == data['difficulty'],
         orElse: () => Difficulty.beginner,
       ),
-      tags: List<String>.from(data['tags'] ?? []),
       masteryScore: (data['masteryScore'] ?? 0.0).toDouble(),
       reviewStatus: ReviewStatus.values.firstWhere(
         (e) => e.toString() == data['reviewStatus'],
