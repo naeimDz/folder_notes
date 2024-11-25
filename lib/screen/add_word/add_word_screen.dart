@@ -4,6 +4,8 @@ import 'package:my_lab/screen/add_word/steps/second_step.dart';
 import 'package:my_lab/screen/add_word/steps/third_step.dart';
 import 'package:my_lab/screen/shared/widgets/custom_sliver_app_bar.dart';
 import 'package:provider/provider.dart';
+import '../../providers/metadata_provider.dart';
+import '../../providers/word_provider.dart';
 import 'steps/first_step.dart';
 import 'widgets/custom_bottom_navigation.dart';
 import 'widgets/step_progress_indicator.dart';
@@ -73,8 +75,10 @@ class _AddWordScreenState extends State<AddWordScreen> {
             },
             onNextPressed: () {
               if (provider.state.isLastStep) {
-                //    final newWord = context.read<FormStateProvider>().getWordData();
-                //     context.read<WordProvider>().addWord();
+                final newWord = context.read<FormStateProvider>().getWordData();
+                context.read<WordProvider>().addWord(newWord!);
+                context.read<MetadataProvider>().updateWordCount();
+                Navigator.pushNamed(context, "/home");
               } else {
                 provider.navigateForward();
                 _navigateToPage(provider.state.currentStep);

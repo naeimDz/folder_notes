@@ -64,9 +64,9 @@ class WordDetails {
 
   factory WordDetails.empty() {
     return WordDetails(
-        antonyms: [],
-        synonyms: [],
-        tags: [],
+        antonyms: [""],
+        synonyms: [""],
+        tags: [""],
         partOfSpeech: "",
         contextNotes: "");
   }

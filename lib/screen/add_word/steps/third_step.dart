@@ -64,7 +64,7 @@ class ThirdStepForm extends StatelessWidget {
             onChanged: (value) {
               context
                   .read<FormStateProvider>()
-                  .updateTheWordDetail(contextNotes: value);
+                  .updateTheWordDetail(tags: [value]);
             },
             context,
             label: "Tags",

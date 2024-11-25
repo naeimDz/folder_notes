@@ -50,8 +50,8 @@ class WordProvider with ChangeNotifier {
       await prefs.setString('lastFetchedDate', currentDate);
       await prefs.setString(
           'word',
-          _wordOfTheDay!
-              .word); // Store word (you can store more data if necessary)
+          _wordOfTheDay?.word ??
+              ""); // Store word (you can store more data if necessary)
     } catch (e) {
       print(e); // Handle error here
     }
@@ -82,7 +82,9 @@ class WordProvider with ChangeNotifier {
     _setLoading(true);
     try {
       await _controller.addWord(word);
+
       _words.add(word);
+
       notifyListeners();
     } catch (e) {
       _setError(e.toString());
