@@ -129,7 +129,6 @@ class _AddWordScreenState extends State<AddWordScreen> {
 
   CustomSliverAppBar _buildAppBar(BuildContext context) {
     final theme = Theme.of(context);
-    print('CustomSliverAppBar ui!!!!!!!');
     return CustomSliverAppBar(
       gradientColors: [
         theme.colorScheme.primary,

@@ -40,6 +40,36 @@ class WordController {
     }
   }
 
+  // Update Field
+  Future<void> updateField({
+    required String documentId,
+    required String fieldPath,
+    required dynamic value,
+    bool isArrayUnion = false,
+    bool isArrayRemove = false,
+  }) async {
+    try {
+      dynamic updateValue;
+      if (isArrayUnion) {
+        updateValue = FieldValue.arrayUnion([value]);
+      } else if (isArrayRemove) {
+        updateValue = FieldValue.arrayRemove([value]);
+      } else {
+        updateValue = value;
+      }
+
+      await _firestore.collection(_collection).doc(documentId).update({
+        fieldPath: updateValue,
+      });
+    } on FirebaseException catch (e) {
+      print("FirebaseException: ${e.message}");
+      throw Exception("Failed to update field: ${e.message}");
+    } catch (e) {
+      print("Unknown error: $e");
+      throw Exception("An unknown error occurred during the update");
+    }
+  }
+
   // Delete
   Future<void> deleteWord(String id) async {
     try {

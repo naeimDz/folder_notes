@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:my_lab/screen/word_detail/custom_section.dart';
 import '../../models/word.dart';
+import '../../providers/word_provider.dart';
 import 'word_input.dart';
 
-class WordRelationsWidget extends StatefulWidget {
+class WordRelationsWidget extends StatelessWidget {
   final Word word;
 
   const WordRelationsWidget({
@@ -12,17 +14,76 @@ class WordRelationsWidget extends StatefulWidget {
   });
 
   @override
-  State<WordRelationsWidget> createState() => _WordRelationsWidgetState();
-}
+  Widget build(BuildContext context) {
+    final synonyms = word.details?.synonyms ?? [];
+    final antonyms = word.details?.antonyms ?? [];
 
-class _WordRelationsWidgetState extends State<WordRelationsWidget> {
-  final TextEditingController _controller = TextEditingController();
-  bool _isAddingNewWord =
-      false; // Flag to control the add word section visibility
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+    // Fetch the Firestore provider
+    final provider = context.watch<WordProvider>();
+    // Method to handle adding a new word to synonyms or antonyms
+    void handleAddWord(String theWord, String type) {
+      final fieldPath =
+          type == 'Synonym' ? 'details.synonyms' : 'details.antonyms';
+      final isArrayUnion = true; // Always adding new words, not removing
+
+      provider.updateField(
+        documentId: word.id!,
+        fieldPath: fieldPath,
+        value: theWord,
+        isArrayUnion: isArrayUnion,
+      );
+    }
+
+    // UI for the WordRelationsWidget
+    return Column(
+      children: [
+        // Show input section for adding new word
+        WordInput(
+          isVisible: provider.isLoading,
+          onSave: (word, type) {
+            handleAddWord(word, type);
+          },
+          onHide: () {},
+        ),
+
+        // Display lists for synonyms and antonyms
+        Row(
+          children: [
+            if (synonyms.isNotEmpty) ...[
+              Expanded(
+                child: _buildWordList(
+                  context,
+                  title: "Synonyms",
+                  words: synonyms,
+                  cardColor: Colors.green[50]!,
+                  chipColor: Colors.green[100]!,
+                  textColor: Colors.green[900]!,
+                ),
+              ),
+              if (antonyms.isNotEmpty) const SizedBox(width: 16),
+            ],
+            if (antonyms.isNotEmpty)
+              Expanded(
+                child: _buildWordList(
+                  context,
+                  title: "Antonyms",
+                  words: antonyms,
+                  cardColor: Colors.red[50]!,
+                  chipColor: Colors.red[100]!,
+                  textColor: Colors.red[900]!,
+                ),
+              ),
+          ],
+        ),
+
+        // Show loading or error states if necessary
+        if (provider.error != null)
+          Text(
+            provider.error!,
+            style: const TextStyle(color: Colors.red),
+          ),
+      ],
+    );
   }
 
   Widget _buildWordChip({
@@ -56,7 +117,8 @@ class _WordRelationsWidgetState extends State<WordRelationsWidget> {
     );
   }
 
-  Widget _buildWordList({
+  Widget _buildWordList(
+    BuildContext context, {
     required String title,
     required List<String> words,
     required Color cardColor,
@@ -84,9 +146,14 @@ class _WordRelationsWidgetState extends State<WordRelationsWidget> {
           const SizedBox(height: 12),
           TextButton.icon(
             onPressed: () {
-              setState(() {
-                _isAddingNewWord = !_isAddingNewWord; // Toggle add word section
-              });
+              context.read<WordProvider>().setLoading(true);
+              // Toggle the input visibility (handled by the provider)
+              /* context.read<WordProvider>().updateField(
+                    documentId: word.id!,
+                    fieldPath: 'details.synonyms',
+                    value: word,
+                    isArrayUnion: true,
+                  );*/
             },
             icon: Icon(
               Icons.add_circle_outline,
@@ -106,84 +173,6 @@ class _WordRelationsWidgetState extends State<WordRelationsWidget> {
           ),
         ],
       ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final synonyms = widget.word.details?.synonyms ?? [];
-    final antonyms = widget.word.details?.antonyms ?? [];
-
-    if (synonyms.isEmpty && antonyms.isEmpty) {
-      return Center(
-        child: TextButton.icon(
-          onPressed: () {
-            setState(() {
-              _isAddingNewWord = !_isAddingNewWord; // Toggle add word section
-            });
-          },
-          icon: const Icon(Icons.add_circle_outline),
-          label: const Text('Add your first word'),
-          style: TextButton.styleFrom(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 24,
-              vertical: 16,
-            ),
-          ),
-        ),
-      );
-    }
-
-    return Column(
-      children: [
-        // Show the input section for adding a new word
-
-        WordInput(
-          isVisible: _isAddingNewWord,
-          onSave: (word, type) {
-            // Handle saving
-
-            setState(() {
-              if (type == 'Synonym') {
-                synonyms.add(word);
-              } else {
-                antonyms.add(word);
-              }
-            });
-          },
-          onHide: () {
-            // Handle hide
-            setState(() => _isAddingNewWord = false);
-          },
-        ),
-
-        Row(
-          children: [
-            if (synonyms.isNotEmpty) ...[
-              Expanded(
-                child: _buildWordList(
-                  title: "Synonyms",
-                  words: synonyms,
-                  cardColor: Colors.green[50]!,
-                  chipColor: Colors.green[100]!,
-                  textColor: Colors.green[900]!,
-                ),
-              ),
-              if (antonyms.isNotEmpty) const SizedBox(width: 16),
-            ],
-            if (antonyms.isNotEmpty)
-              Expanded(
-                child: _buildWordList(
-                  title: "Antonyms",
-                  words: antonyms,
-                  cardColor: Colors.red[50]!,
-                  chipColor: Colors.red[100]!,
-                  textColor: Colors.red[900]!,
-                ),
-              ),
-          ],
-        ),
-      ],
     );
   }
 }

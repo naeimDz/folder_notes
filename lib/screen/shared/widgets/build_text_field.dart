@@ -17,7 +17,6 @@ Widget buildModernTextField(
   FocusNode? focusNode,
   bool isPassword = false,
 }) {
-  print("object///////////////////*****************$label");
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [

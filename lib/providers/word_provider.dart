@@ -112,6 +112,31 @@ class WordProvider with ChangeNotifier {
     }
   }
 
+  /// Update a field in Firestore and handle state
+  Future<void> updateField({
+    required String documentId,
+    required String fieldPath,
+    required dynamic value,
+    bool isArrayUnion = false,
+    bool isArrayRemove = false,
+  }) async {
+    _setLoading(true);
+    try {
+      await _controller.updateField(
+        documentId: documentId,
+        fieldPath: fieldPath,
+        value: value,
+        isArrayUnion: isArrayUnion,
+        isArrayRemove: isArrayRemove,
+      );
+      notifyListeners();
+    } catch (e) {
+      _setError(e.toString());
+    } finally {
+      _setLoading(false);
+    }
+  }
+
   Future<void> deleteWord(String id) async {
     _setLoading(true);
     try {
@@ -220,6 +245,11 @@ class WordProvider with ChangeNotifier {
 
   // Helper Methods
   void _setLoading(bool loading) {
+    _isLoading = loading;
+    notifyListeners();
+  }
+
+  void setLoading(bool loading) {
     _isLoading = loading;
     notifyListeners();
   }
