@@ -146,14 +146,9 @@ class WordRelationsWidget extends StatelessWidget {
           const SizedBox(height: 12),
           TextButton.icon(
             onPressed: () {
-              context.read<WordProvider>().setLoading(true);
               // Toggle the input visibility (handled by the provider)
-              /* context.read<WordProvider>().updateField(
-                    documentId: word.id!,
-                    fieldPath: 'details.synonyms',
-                    value: word,
-                    isArrayUnion: true,
-                  );*/
+
+              context.read<WordProvider>().setLoading(true);
             },
             icon: Icon(
               Icons.add_circle_outline,

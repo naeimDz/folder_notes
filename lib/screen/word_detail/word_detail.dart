@@ -18,7 +18,6 @@ class _WordDetailScreenState extends State<WordDetailScreen>
   bool isBookmarked = false;
   bool showFullDefinition = false;
   late AnimationController _controller;
-  late Animation<double> _animation;
 
   @override
   void initState() {
@@ -26,10 +25,6 @@ class _WordDetailScreenState extends State<WordDetailScreen>
     _controller = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
-    );
-    _animation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeInOut,
     );
   }
 
@@ -152,30 +147,6 @@ class _WordDetailScreenState extends State<WordDetailScreen>
         slivers: [
           CustomSliverAppBar(
             title: word.word,
-            actions: [
-              IconButton(
-                icon: AnimatedBuilder(
-                  animation: _animation,
-                  builder: (context, child) {
-                    return Transform.scale(
-                      scale: 1.0 + (_animation.value * 0.2),
-                      child: Icon(
-                        isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                        color: isBookmarked ? Colors.yellow : Colors.white,
-                      ),
-                    );
-                  },
-                ),
-                onPressed: () {
-                  setState(() {
-                    isBookmarked = !isBookmarked;
-                    if (isBookmarked) {
-                      _controller.forward(from: 0);
-                    }
-                  });
-                },
-              ),
-            ],
           ),
           SliverToBoxAdapter(
             child: Padding(

@@ -16,7 +16,7 @@ class AppRoutes {
     switch (settings.name) {
       case initial:
         return MaterialPageRoute(
-            builder: (_) => HomeScreen(title: 'مرحباً، Ahmad!'));
+            builder: (_) => HomeScreen(title: 'مرحباً، Naeim!'));
       case home:
         return MaterialPageRoute(builder: (_) => HomeScreen(title: 'مرحباً،'));
       case "/add-word":

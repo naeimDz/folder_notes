@@ -1,7 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../controller/word_controller.dart';
 import '../models/word.dart';
 
@@ -61,7 +60,7 @@ class WordProvider with ChangeNotifier {
   }
 
   Future<void> loadTodaysWords({int limit = 3}) async {
-    _setLoading(true);
+    setLoading(true);
     try {
       _controller.getTodaysWords(limit).listen(
         (words) {
@@ -73,13 +72,13 @@ class WordProvider with ChangeNotifier {
         },
       );
     } finally {
-      _setLoading(false);
+      setLoading(false);
     }
   }
 
   // CRUD Operations
   Future<void> addWord(Word word) async {
-    _setLoading(true);
+    setLoading(true);
     try {
       await _controller.addWord(word);
 
@@ -89,12 +88,12 @@ class WordProvider with ChangeNotifier {
     } catch (e) {
       _setError(e.toString());
     } finally {
-      _setLoading(false);
+      setLoading(false);
     }
   }
 
   Future<void> updateWord(Word word) async {
-    _setLoading(true);
+    setLoading(true);
     try {
       await _controller.updateWord(word);
       final index = _words.indexWhere((w) => w.id == word.id);
@@ -108,7 +107,7 @@ class WordProvider with ChangeNotifier {
     } catch (e) {
       _setError(e.toString());
     } finally {
-      _setLoading(false);
+      setLoading(false);
     }
   }
 
@@ -120,7 +119,7 @@ class WordProvider with ChangeNotifier {
     bool isArrayUnion = false,
     bool isArrayRemove = false,
   }) async {
-    _setLoading(true);
+    setLoading(true);
     try {
       await _controller.updateField(
         documentId: documentId,
@@ -129,16 +128,34 @@ class WordProvider with ChangeNotifier {
         isArrayUnion: isArrayUnion,
         isArrayRemove: isArrayRemove,
       );
+
       notifyListeners();
     } catch (e) {
       _setError(e.toString());
     } finally {
-      _setLoading(false);
+      setLoading(false);
     }
   }
 
+// Toggle favorite status
+  Future<void> toggleFavorite(String wordId) async {
+    try {
+      final word = _words.firstWhere((word) => word.id == wordId);
+      await _controller.updateField(
+        documentId: word.id!,
+        fieldPath: 'isFavorite',
+        value: !word.isFavorite,
+      );
+      notifyListeners();
+    } catch (e) {
+      print("Error toggling favorite status: $e");
+    }
+  }
+
+  // Delete a word
+
   Future<void> deleteWord(String id) async {
-    _setLoading(true);
+    setLoading(true);
     try {
       await _controller.deleteWord(id);
       _words.removeWhere((w) => w.id == id);
@@ -149,7 +166,7 @@ class WordProvider with ChangeNotifier {
     } catch (e) {
       _setError(e.toString());
     } finally {
-      _setLoading(false);
+      setLoading(false);
     }
   }
 
@@ -167,7 +184,7 @@ class WordProvider with ChangeNotifier {
 
   // Filter Operations
   Future<void> loadFavorites() async {
-    _setLoading(true);
+    setLoading(true);
     try {
       _controller.getFavoriteWords().listen(
         (favorites) {
@@ -177,12 +194,12 @@ class WordProvider with ChangeNotifier {
         onError: (e) => _setError(e.toString()),
       );
     } finally {
-      _setLoading(false);
+      setLoading(false);
     }
   }
 
   Future<void> loadByDifficulty(Difficulty difficulty) async {
-    _setLoading(true);
+    setLoading(true);
     try {
       _controller.getWordsByDifficulty(difficulty).listen(
         (words) {
@@ -192,12 +209,12 @@ class WordProvider with ChangeNotifier {
         onError: (e) => _setError(e.toString()),
       );
     } finally {
-      _setLoading(false);
+      setLoading(false);
     }
   }
 
   Future<void> loadForReview() async {
-    _setLoading(true);
+    setLoading(true);
     try {
       _controller.getWordsForReview().listen(
         (words) {
@@ -207,7 +224,7 @@ class WordProvider with ChangeNotifier {
         onError: (e) => _setError(e.toString()),
       );
     } finally {
-      _setLoading(false);
+      setLoading(false);
     }
   }
 
@@ -241,12 +258,6 @@ class WordProvider with ChangeNotifier {
         notifyListeners();
       },
     );
-  }
-
-  // Helper Methods
-  void _setLoading(bool loading) {
-    _isLoading = loading;
-    notifyListeners();
   }
 
   void setLoading(bool loading) {

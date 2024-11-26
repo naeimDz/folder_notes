@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_lab/screen/shared/widgets/custom_sliver_app_bar.dart';
 import 'package:provider/provider.dart';
 import '../../models/word_card_config.dart';
+import '../../providers/metadata_provider.dart';
 import '../../providers/word_provider.dart';
 
 import 'word_card.dart';
@@ -128,7 +129,7 @@ class _VocabularyListScreenState extends State<VocabularyListScreen>
               decoration: InputDecoration(
                 hintText: 'Search words...',
                 prefixIcon: Icon(Icons.search),
-                suffixIcon: Icon(Icons.mic),
+                // suffixIcon: Icon(Icons.mic),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(15),
                   borderSide: BorderSide.none,
@@ -218,7 +219,7 @@ class _VocabularyListScreenState extends State<VocabularyListScreen>
           // Show loading spinner if words list is empty and we are still fetching data
           return SliverFillRemaining(
             child: Center(
-              child: CircularProgressIndicator(),
+              child: _buildEmptyState(),
             ),
           );
         }
@@ -261,14 +262,17 @@ class _VocabularyListScreenState extends State<VocabularyListScreen>
                         onEdit: (wordId) {
                           print("Edit word with id: $wordId");
                         },
-                        onShare: (wordId) {
+                        /* onShare: (wordId) {
                           print("Share word with id: $wordId");
-                        },
+                        },*/
                         onDelete: (wordId) {
-                          print("Delete word with id: $wordId");
+                          context.read<WordProvider>().deleteWord(wordId);
+                          context
+                              .read<MetadataProvider>()
+                              .updateWordCount(decrement: true);
                         },
                         onFavoriteToggle: (wordId) {
-                          print("Toggle favorite for word id: $wordId");
+                          context.read<WordProvider>().toggleFavorite(wordId);
                         },
                       ),
                     ),
