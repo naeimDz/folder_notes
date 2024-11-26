@@ -22,7 +22,18 @@ class WordProvider with ChangeNotifier {
   }
 
   // Getters
-  List<Word> get words => _words;
+  // List<Word> get words => _words;
+  List<Word> get words {
+    if (_searchQuery.isEmpty) {
+      return _words;
+    }
+    return _words
+        .where((word) =>
+            word.word.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+            word.translation.toLowerCase().contains(_searchQuery.toLowerCase()))
+        .toList();
+  }
+
   Word? get selectedWord => _selectedWord;
   Word? get wordOfTheDay => _wordOfTheDay;
   bool get isLoading => _isLoading;
@@ -182,67 +193,28 @@ class WordProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // Filter Operations
-  Future<void> loadFavorites() async {
-    setLoading(true);
-    try {
-      _controller.getFavoriteWords().listen(
-        (favorites) {
-          _words = favorites;
-          notifyListeners();
-        },
-        onError: (e) => _setError(e.toString()),
-      );
-    } finally {
-      setLoading(false);
+  // Words after applying the filter
+  List<Word> getFilteredWords(String selectedFilter) {
+    switch (selectedFilter) {
+      case 'Favorites':
+        return _words.where((word) => word.isFavorite).toList();
+      case 'Recent':
+        return _words;
+      case 'Mastered':
+        return _words;
+      case 'Alphabetical':
+        return _words..sort((a, b) => a.word.compareTo(b.word));
+      case 'Mastery Level':
+        return _words..sort((a, b) => b.masteryScore.compareTo(a.masteryScore));
+      default: // 'All Words'
+        return _words
+            .where((word) =>
+                word.word.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+                word.translation
+                    .toLowerCase()
+                    .contains(_searchQuery.toLowerCase()))
+            .toList();
     }
-  }
-
-  Future<void> loadByDifficulty(Difficulty difficulty) async {
-    setLoading(true);
-    try {
-      _controller.getWordsByDifficulty(difficulty).listen(
-        (words) {
-          _words = words;
-          notifyListeners();
-        },
-        onError: (e) => _setError(e.toString()),
-      );
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  Future<void> loadForReview() async {
-    setLoading(true);
-    try {
-      _controller.getWordsForReview().listen(
-        (words) {
-          _words = words;
-          notifyListeners();
-        },
-        onError: (e) => _setError(e.toString()),
-      );
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  // Search and filter methods
-  List<Word> filterByTags(List<String> tags) {
-    return _words
-        .where((word) => tags.every((tag) => word.details!.tags.contains(tag)))
-        .toList();
-  }
-
-  List<Word> searchWords() {
-    return _words
-        .where((word) =>
-            word.word.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-            word.translation.toLowerCase().contains(_searchQuery.toLowerCase()))
-        /* .where((word) =>
-          tags.every((tag) => word.tags.contains(tag)))*/
-        .toList();
   }
 
   void setSearchQuery(String query) {

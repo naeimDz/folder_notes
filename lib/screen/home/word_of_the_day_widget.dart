@@ -102,15 +102,14 @@ class WordOfTheDayWidget extends StatelessWidget {
                       word.details?.definition ?? "",
                       style: TextStyle(fontSize: 16),
                     ),
-                    SizedBox(height: 16),
-                    Row(
-                      children: word.details?.tags
-                              .map((tag) => CustomChip(
-                                    label: tag,
-                                  ))
-                              .toList() ??
-                          [],
-                    ),
+                    SizedBox(height: 8),
+                    if (word.details!.tags.isNotEmpty &&
+                        word.details!.tags.first.isNotEmpty)
+                      Row(
+                        children: word.details!.tags
+                            .map((tag) => CustomChip(label: tag))
+                            .toList(),
+                      )
                   ],
                 ),
               ),

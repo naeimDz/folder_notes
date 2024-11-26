@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:my_lab/core/app_theme.dart';
 import 'package:my_lab/core/routes/routes.dart';
 import 'package:my_lab/firebase_options.dart';
+import 'package:my_lab/providers/filter_provider.dart';
 import 'package:my_lab/providers/form_state_provider.dart';
 import 'package:my_lab/providers/theme_provider.dart';
 import 'package:provider/provider.dart';
@@ -31,6 +32,7 @@ void main() async {
       fallbackLocale: const Locale('en'),
       child: MultiProvider(
         providers: [
+          ChangeNotifierProvider(create: (_) => FilterProvider()),
           ChangeNotifierProvider(create: (_) => FormStateProvider()),
           ChangeNotifierProvider(create: (_) => WordProvider()),
           ChangeNotifierProvider(create: (_) => MetadataProvider()),

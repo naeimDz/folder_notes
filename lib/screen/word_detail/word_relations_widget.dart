@@ -49,7 +49,7 @@ class WordRelationsWidget extends StatelessWidget {
         // Display lists for synonyms and antonyms
         Row(
           children: [
-            if (synonyms.isNotEmpty) ...[
+            if (synonyms.isNotEmpty && synonyms.first.isNotEmpty) ...[
               Expanded(
                 child: _buildWordList(
                   context,
@@ -62,7 +62,7 @@ class WordRelationsWidget extends StatelessWidget {
               ),
               if (antonyms.isNotEmpty) const SizedBox(width: 16),
             ],
-            if (antonyms.isNotEmpty)
+            if (antonyms.isNotEmpty && antonyms.first.isNotEmpty)
               Expanded(
                 child: _buildWordList(
                   context,

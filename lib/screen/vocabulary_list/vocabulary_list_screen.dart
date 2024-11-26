@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_lab/screen/shared/widgets/custom_sliver_app_bar.dart';
 import 'package:provider/provider.dart';
 import '../../models/word_card_config.dart';
-import '../../providers/metadata_provider.dart';
+import '../../providers/filter_provider.dart';
 import '../../providers/word_provider.dart';
 
 import 'word_card.dart';
@@ -46,7 +46,7 @@ class _VocabularyListScreenState extends State<VocabularyListScreen>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
+    print("scaffold _VocabularyListScreenStat");
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
       body: Stack(
@@ -124,7 +124,9 @@ class _VocabularyListScreenState extends State<VocabularyListScreen>
             ),
             child: TextField(
               onChanged: (value) {
-                context.read<WordProvider>().setSearchQuery(value);
+                context
+                    .read<WordProvider>()
+                    .setSearchQuery(value); // Update query
               },
               decoration: InputDecoration(
                 hintText: 'Search words...',
@@ -146,27 +148,29 @@ class _VocabularyListScreenState extends State<VocabularyListScreen>
             child: Row(
               children: [
                 _buildAnimatedFilterChip(
-                    label: 'All Words',
-                    icon: Icons.format_list_bulleted,
-                    isSelected: true),
+                  label: 'All Words',
+                  icon: Icons.format_list_bulleted,
+                ),
                 _buildAnimatedFilterChip(
-                    label: 'Favorites',
-                    icon: Icons.favorite,
-                    isSelected: false),
+                  label: 'Favorites',
+                  icon: Icons.favorite,
+                ),
                 _buildAnimatedFilterChip(
-                    label: 'Recent',
-                    icon: Icons.access_time,
-                    isSelected: false),
+                  label: 'Recent',
+                  icon: Icons.access_time,
+                ),
                 _buildAnimatedFilterChip(
-                    label: 'Mastered', icon: Icons.verified, isSelected: false),
+                  label: 'Mastered',
+                  icon: Icons.verified,
+                ),
                 _buildAnimatedFilterChip(
-                    label: 'Alphabetical',
-                    icon: Icons.sort_by_alpha,
-                    isSelected: false),
+                  label: 'Alphabetical',
+                  icon: Icons.sort_by_alpha,
+                ),
                 _buildAnimatedFilterChip(
-                    label: 'Mastery Level',
-                    icon: Icons.bar_chart,
-                    isSelected: false),
+                  label: 'Mastery Level',
+                  icon: Icons.bar_chart,
+                ),
               ],
             ),
           ),
@@ -178,49 +182,55 @@ class _VocabularyListScreenState extends State<VocabularyListScreen>
   Widget _buildAnimatedFilterChip({
     required String label,
     required IconData icon,
-    required bool isSelected,
   }) {
-    return Padding(
-      padding: EdgeInsets.only(right: 8),
-      child: FilterChip(
-        label: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              size: 16,
-              color: isSelected ? Colors.white : Colors.grey[600],
+    print("builid animated filter");
+    return Consumer<FilterProvider>(
+      builder: (context, filterProvider, child) {
+        final isSelected = filterProvider.filters[label] ?? false;
+        return Padding(
+          padding: EdgeInsets.only(right: 8),
+          child: FilterChip(
+            label: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  icon,
+                  size: 16,
+                  color: isSelected ? Colors.white : Colors.grey[600],
+                ),
+                SizedBox(width: 4),
+                Text(label),
+              ],
             ),
-            SizedBox(width: 4),
-            Text(label),
-          ],
-        ),
-        selected: isSelected,
-        onSelected: (bool selected) {
-          // Handle filter selection
-        },
-        backgroundColor: Colors.grey[200],
-        selectedColor: Colors.blue[600],
-        labelStyle: TextStyle(
-          color: isSelected ? Colors.white : Colors.grey[800],
-        ),
-        elevation: 0,
-        pressElevation: 2,
-      ),
+            selected: isSelected,
+            onSelected: (selected) {
+              context.read<FilterProvider>().toggleFilter(label);
+            },
+            backgroundColor: Colors.grey[200],
+            selectedColor: Colors.blue[600],
+            labelStyle: TextStyle(
+              color: isSelected ? Colors.white : Colors.grey[800],
+            ),
+            elevation: 0,
+            pressElevation: 2,
+          ),
+        );
+      },
     );
   }
 
   Widget _buildWordsList(BuildContext context) {
-    return Consumer<WordProvider>(
-      builder: (context, provider, child) {
-        final words = provider.searchWords();
+    print('buildlisttest');
+    return Consumer2<WordProvider, FilterProvider>(
+      builder: (context, wordProvider, filterProvider, child) {
+        final selectedFilter = filterProvider.filters.entries
+            .firstWhere((entry) => entry.value)
+            .key; // Get the selected filter
+        final filteredWords = wordProvider.getFilteredWords(selectedFilter);
 
-        if (words.isEmpty) {
-          // Show loading spinner if words list is empty and we are still fetching data
+        if (filteredWords.isEmpty) {
           return SliverFillRemaining(
-            child: Center(
-              child: _buildEmptyState(),
-            ),
+            child: Center(child: _buildEmptyState()),
           );
         }
 
@@ -229,6 +239,7 @@ class _VocabularyListScreenState extends State<VocabularyListScreen>
           sliver: SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) {
+                final word = filteredWords[index];
                 return SlideTransition(
                   position: Tween<Offset>(
                     begin: Offset(0, 0.1),
@@ -237,7 +248,7 @@ class _VocabularyListScreenState extends State<VocabularyListScreen>
                     CurvedAnimation(
                       parent: _animationController,
                       curve: Interval(
-                        (index / words.length).clamp(0.0, 1.0),
+                        (index / filteredWords.length).clamp(0.0, 1.0),
                         1.0,
                         curve: Curves.easeOut,
                       ),
@@ -248,9 +259,7 @@ class _VocabularyListScreenState extends State<VocabularyListScreen>
                     child: Padding(
                       padding: EdgeInsets.only(bottom: 12),
                       child: WordCard(
-                        onMarkAsLearned: (word) =>
-                            print("Mark as learned: $word"),
-                        word: words[index],
+                        word: word,
                         config: WordCardConfig(
                           showDefinition: true,
                           showTranslation: true,
@@ -262,24 +271,20 @@ class _VocabularyListScreenState extends State<VocabularyListScreen>
                         onEdit: (wordId) {
                           print("Edit word with id: $wordId");
                         },
-                        /* onShare: (wordId) {
-                          print("Share word with id: $wordId");
-                        },*/
+                        onMarkAsLearned: (word) =>
+                            print("Mark as learned: $word"),
                         onDelete: (wordId) {
-                          context.read<WordProvider>().deleteWord(wordId);
-                          context
-                              .read<MetadataProvider>()
-                              .updateWordCount(decrement: true);
+                          wordProvider.deleteWord(wordId);
                         },
                         onFavoriteToggle: (wordId) {
-                          context.read<WordProvider>().toggleFavorite(wordId);
+                          wordProvider.toggleFavorite(wordId);
                         },
                       ),
                     ),
                   ),
                 );
               },
-              childCount: words.length,
+              childCount: filteredWords.length,
             ),
           ),
         );
