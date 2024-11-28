@@ -130,8 +130,8 @@ class _WordDetailScreenState extends State<WordDetailScreen>
 
   @override
   Widget build(BuildContext context) {
-    final wordProvider = Provider.of<WordProvider>(context);
-    final word = wordProvider.selectedWord;
+    print("build WordDetailScreen //");
+    final word = Provider.of<WordProvider>(context, listen: false).selectedWord;
 
     if (word == null) {
       return Scaffold(
@@ -213,7 +213,14 @@ class _WordDetailScreenState extends State<WordDetailScreen>
                           ),
                           ...[
                             const SizedBox(height: 16),
-                            _buildDifficultyIndicator(word.difficulty.index),
+                            Selector<WordProvider, int>(
+                              selector: (context, provider) =>
+                                  provider.selectedWord?.difficulty.index ?? 0,
+                              builder: (context, difficultyIndex, child) {
+                                return _buildDifficultyIndicator(
+                                    difficultyIndex);
+                              },
+                            ),
                           ],
                         ],
                       ),
@@ -262,8 +269,16 @@ class _WordDetailScreenState extends State<WordDetailScreen>
                       ),
                     ),
                   // Synonyms & Antonyms
-                  WordRelationsWidget(
-                    word: word,
+                  Selector<WordProvider, bool>(
+                    selector: (context, provider) =>
+                        provider.updateSelectedWord,
+                    builder: (context, updateTheWord, child) {
+                      return WordRelationsWidget(
+                        synonyms: word.details?.synonyms,
+                        antonyms: word.details?.antonyms,
+                        word: word, // Pass an empty list if synonyms are null
+                      );
+                    },
                   ),
 
                   // Learning Progress
@@ -337,6 +352,7 @@ class _WordDetailScreenState extends State<WordDetailScreen>
     );
   }
 
+/////////////////////////////////////////
   Widget _buildActionButton({
     required IconData icon,
     required String label,

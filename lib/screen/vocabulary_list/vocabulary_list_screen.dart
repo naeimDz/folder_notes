@@ -227,7 +227,6 @@ class _VocabularyListScreenState extends State<VocabularyListScreen>
             .firstWhere((entry) => entry.value)
             .key; // Get the selected filter
         final filteredWords = wordProvider.getFilteredWords(selectedFilter);
-
         if (filteredWords.isEmpty) {
           return SliverFillRemaining(
             child: Center(child: _buildEmptyState()),

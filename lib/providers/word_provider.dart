@@ -8,13 +8,13 @@ class WordProvider with ChangeNotifier {
   final WordController _controller = WordController();
   List<Word> _words = [];
   String _searchQuery = '';
-  String selectedTag = 'All';
   Word? _selectedWord;
   Word? _wordOfTheDay;
   bool _isLoading = false;
   String? _error;
   String? _lastFetchedDate;
   List<Word> _todaysWords = [];
+  bool updateSelectedWord = false;
 
   WordProvider() {
     getWords();
@@ -113,12 +113,14 @@ class WordProvider with ChangeNotifier {
         if (_selectedWord?.id == word.id) {
           _selectedWord = word;
         }
+        updateSelectedWord = !updateSelectedWord;
         notifyListeners();
       }
     } catch (e) {
       _setError(e.toString());
     } finally {
       setLoading(false);
+      updateSelectedWord = !updateSelectedWord;
     }
   }
 
@@ -139,7 +141,6 @@ class WordProvider with ChangeNotifier {
         isArrayUnion: isArrayUnion,
         isArrayRemove: isArrayRemove,
       );
-
       notifyListeners();
     } catch (e) {
       _setError(e.toString());
@@ -207,13 +208,7 @@ class WordProvider with ChangeNotifier {
       case 'Mastery Level':
         return _words..sort((a, b) => b.masteryScore.compareTo(a.masteryScore));
       default: // 'All Words'
-        return _words
-            .where((word) =>
-                word.word.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-                word.translation
-                    .toLowerCase()
-                    .contains(_searchQuery.toLowerCase()))
-            .toList();
+        return _words;
     }
   }
 
@@ -230,6 +225,17 @@ class WordProvider with ChangeNotifier {
         notifyListeners();
       },
     );
+  }
+
+  // Method to update the word list
+  void updateWords(List<Word> words) {
+    _words = words
+        .where((word) =>
+            word.word.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+            word.translation.toLowerCase().contains(_searchQuery.toLowerCase()))
+        .toList();
+
+    notifyListeners(); // Notify listeners to rebuild UI
   }
 
   void setLoading(bool loading) {
