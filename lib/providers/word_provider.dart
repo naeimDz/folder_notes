@@ -102,28 +102,6 @@ class WordProvider with ChangeNotifier {
     }
   }
 
-  /// Update a field in Firestore and handle state
-  Future<void> updateField({
-    required String documentId,
-    required String fieldPath,
-    required dynamic value,
-    bool isArrayUnion = false,
-    bool isArrayRemove = false,
-  }) async {
-    try {
-      await _controller.updateField(
-        documentId: documentId,
-        fieldPath: fieldPath,
-        value: value,
-        isArrayUnion: isArrayUnion,
-        isArrayRemove: isArrayRemove,
-      );
-      notifyListeners();
-    } catch (e) {
-      _setError(e.toString());
-    } finally {}
-  }
-
 // Toggle favorite status
   Future<void> toggleFavorite(String wordId) async {
     try {

@@ -271,14 +271,16 @@ class _WordDetailScreenState extends State<WordDetailScreen>
                       ),
                     ),
                   // Synonyms & Antonyms
-                  Selector<WordProvider, bool>(
-                    selector: (context, provider) =>
-                        provider.updateSelectedWord,
-                    builder: (context, updateTheWord, child) {
+                  Selector<FormStateProvider, (List<String>, List<String>)>(
+                    selector: (context, provider) => (
+                      provider.state.wordDetails?.synonyms ?? [],
+                      provider.state.wordDetails?.antonyms ?? []
+                    ),
+                    builder: (context, theWordDetail, child) {
                       return WordRelationsWidget(
-                        synonyms: word.details?.synonyms,
-                        antonyms: word.details?.antonyms,
-                        word: word, // Pass an empty list if synonyms are null
+                        synonyms: theWordDetail.$1,
+                        antonyms: theWordDetail.$2,
+                        word: word,
                       );
                     },
                   ),

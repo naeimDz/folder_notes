@@ -51,9 +51,9 @@ class WordController {
     try {
       dynamic updateValue;
       if (isArrayUnion) {
-        updateValue = FieldValue.arrayUnion([value]);
+        updateValue = FieldValue.arrayUnion(value);
       } else if (isArrayRemove) {
-        updateValue = FieldValue.arrayRemove([value]);
+        updateValue = FieldValue.arrayRemove(value);
       } else {
         updateValue = value;
       }

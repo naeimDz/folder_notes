@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:my_lab/screen/word_detail/custom_section.dart';
 import '../../models/word.dart';
-import '../../providers/word_provider.dart';
+import '../../providers/form_state_provider.dart';
 import 'word_input.dart';
 
 class WordRelationsWidget extends StatelessWidget {
@@ -15,14 +14,22 @@ class WordRelationsWidget extends StatelessWidget {
     this.synonyms,
     this.antonyms,
   });
-  void handleModifyWord(String theWord, String type, WordProvider provider,
-      {bool isArrayUnion = true, isArrayRemove = false}) {
-    final fieldPath =
-        type == 'Synonym' ? 'details.synonyms' : 'details.antonyms';
-    provider.updateField(
-      documentId: word.id!,
-      fieldPath: fieldPath,
-      value: theWord,
+
+  void handleModifyWord(
+    String theWord,
+    String type,
+    FormStateProvider provider, {
+    bool isArrayUnion = true,
+    bool isArrayRemove = false,
+  }) {
+    final documentId = word.id!;
+    final synonymsList = type == 'Synonym' ? [theWord] : null;
+    final antonymsList = type == 'Antonym' ? [theWord] : null;
+
+    provider.updateRelatedWord(
+      documentId: documentId,
+      synonyms: synonymsList,
+      antonyms: antonymsList,
       isArrayUnion: isArrayUnion,
       isArrayRemove: isArrayRemove,
     );
@@ -30,12 +37,8 @@ class WordRelationsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final synonyms = word.details?.synonyms ?? [];
-    //final antonyms = word.details?.antonyms ?? [];
-
-    // Fetch the Firestore provider
-    final provider = context.watch<WordProvider>();
-    // Method to handle adding a new word to synonyms or antonyms
+    // Access the FormStateProvider
+    final provider = context.watch<FormStateProvider>();
 
     // UI for the WordRelationsWidget
     return Column(
@@ -45,8 +48,11 @@ class WordRelationsWidget extends StatelessWidget {
           isVisible: provider.isLoading,
           onSave: (word, type) {
             handleModifyWord(word, type, provider);
+            provider.setLoading(false);
           },
-          onHide: () {},
+          onHide: () {
+            provider.setLoading(false);
+          },
         ),
 
         // Display lists for synonyms and antonyms
@@ -78,13 +84,6 @@ class WordRelationsWidget extends StatelessWidget {
               ),
           ],
         ),
-
-        // Show loading or error states if necessary
-        if (provider.error != null)
-          Text(
-            provider.error!,
-            style: const TextStyle(color: Colors.red),
-          ),
       ],
     );
   }
@@ -109,7 +108,7 @@ class WordRelationsWidget extends StatelessWidget {
         ],
       ),
       child: Row(
-        mainAxisSize: MainAxisSize.min, // Ensures the chip size is compact
+        mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             text,
@@ -118,18 +117,15 @@ class WordRelationsWidget extends StatelessWidget {
               fontWeight: FontWeight.w500,
             ),
           ),
-          if (onRemove !=
-              null) // Show the remove button only if onRemove is provided
+          if (onRemove != null)
             GestureDetector(
               onTap: onRemove,
               child: Padding(
-                padding: const EdgeInsets.only(
-                    left: 8.0), // Space between text and icon
+                padding: const EdgeInsets.only(left: 8.0),
                 child: Icon(
                   Icons.close,
                   size: 16,
-                  color:
-                      textColor.withOpacity(0.7), // Slightly lighter close icon
+                  color: textColor.withOpacity(0.7),
                 ),
               ),
             ),
@@ -146,9 +142,8 @@ class WordRelationsWidget extends StatelessWidget {
     required Color chipColor,
     required Color textColor,
   }) {
-    return CustomSection(
-      title: title,
-      backgroundColor: cardColor,
+    return Container(
+      color: cardColor,
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -159,13 +154,14 @@ class WordRelationsWidget extends StatelessWidget {
             children: words.map((word) {
               return _buildWordChip(
                 onRemove: () {
-                  final provider = context.read<WordProvider>();
+                  final provider = context.read<FormStateProvider>();
                   handleModifyWord(
-                      word,
-                      title.substring(0, 7), // Either "Synonym" or "Antonym"
-                      provider,
-                      isArrayUnion: false, // Set to false for removal
-                      isArrayRemove: true);
+                    word,
+                    title.substring(0, 7), // Either "Synonym" or "Antonym"
+                    provider,
+                    isArrayUnion: false, // Set to false for removal
+                    isArrayRemove: true,
+                  );
                 },
                 text: word,
                 backgroundColor: chipColor,
@@ -176,9 +172,8 @@ class WordRelationsWidget extends StatelessWidget {
           const SizedBox(height: 12),
           TextButton.icon(
             onPressed: () {
-              // Toggle the input visibility (handled by the provider)
-
-              context.read<WordProvider>().setLoading(true);
+              // Toggle the input visibility
+              context.read<FormStateProvider>().setLoading(true);
             },
             icon: Icon(
               Icons.add_circle_outline,

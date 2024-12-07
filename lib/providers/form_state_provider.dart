@@ -10,7 +10,8 @@ class FormStateProvider with ChangeNotifier {
   WordFormState _state = WordFormState();
   WordFormState get state => _state;
   Word get _currentWord => _state.wordData ?? Word.empty();
-
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
   int get maxSteps => 3;
 
   // Selection
@@ -151,6 +152,11 @@ class FormStateProvider with ChangeNotifier {
       _state =
           _state.copyWith(currentStep: 0, wordDetails: null, wordData: null);
     }
+    notifyListeners();
+  }
+
+  void setLoading(bool loading) {
+    _isLoading = loading;
     notifyListeners();
   }
 }
