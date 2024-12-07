@@ -19,6 +19,7 @@ class WordProvider with ChangeNotifier {
   WordProvider() {
     getWords();
     loadTodaysWords();
+    fetchWordOfTheDay();
   }
 
   // Getters
@@ -50,8 +51,7 @@ class WordProvider with ChangeNotifier {
     if (_lastFetchedDate == currentDate && _wordOfTheDay != null) {
       return; // Word for today is already fetched, no need to fetch again
     }
-    _isLoading = true;
-    notifyListeners();
+    setLoading(_isLoading);
 
     try {
       _wordOfTheDay = await _controller.getRandomWord();
@@ -66,8 +66,7 @@ class WordProvider with ChangeNotifier {
       print(e); // Handle error here
     }
 
-    _isLoading = false;
-    notifyListeners();
+    setLoading(_isLoading);
   }
 
   Future<void> loadTodaysWords({int limit = 3}) async {
@@ -100,27 +99,6 @@ class WordProvider with ChangeNotifier {
       _setError(e.toString());
     } finally {
       setLoading(false);
-    }
-  }
-
-  Future<void> updateWord(Word word) async {
-    setLoading(true);
-    try {
-      await _controller.updateWord(word);
-      final index = _words.indexWhere((w) => w.id == word.id);
-      if (index != -1) {
-        _words[index] = word;
-        if (_selectedWord?.id == word.id) {
-          _selectedWord = word;
-        }
-        updateSelectedWord = !updateSelectedWord;
-        notifyListeners();
-      }
-    } catch (e) {
-      _setError(e.toString());
-    } finally {
-      setLoading(false);
-      updateSelectedWord = !updateSelectedWord;
     }
   }
 
@@ -180,18 +158,6 @@ class WordProvider with ChangeNotifier {
     } finally {
       setLoading(false);
     }
-  }
-
-  // Selection
-  void selectWord(Word? word) {
-    _selectedWord = word;
-    notifyListeners();
-  }
-
-  // clear the selected word
-  void clearSelectedWord() {
-    _selectedWord = null;
-    notifyListeners();
   }
 
   // Words after applying the filter

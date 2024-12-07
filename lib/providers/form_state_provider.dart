@@ -1,14 +1,56 @@
 import 'package:flutter/foundation.dart';
 
+import '../controller/word_controller.dart';
 import '../models/word.dart';
 import '../models/word_form_state.dart';
 
 class FormStateProvider with ChangeNotifier {
+  final WordController _controller = WordController();
+
   WordFormState _state = WordFormState();
   WordFormState get state => _state;
   Word get _currentWord => _state.wordData ?? Word.empty();
 
   int get maxSteps => 3;
+
+  // Selection
+  void selectWord(Word? word) {
+    _state = _state.copyWith(wordData: word, wordDetails: word?.details);
+    notifyListeners();
+  }
+
+  Future<void> updateRelatedWord({
+    required String documentId,
+    List<String>? synonyms,
+    List<String>? antonyms,
+    bool isArrayUnion = false,
+    bool isArrayRemove = false,
+  }) async {
+    String fieldPath = "synonyms";
+
+    if (synonyms != null) {
+      fieldPath = 'synonyms';
+    } else if (antonyms != null) {
+      fieldPath = 'antonyms';
+    }
+    await _controller.updateField(
+      documentId: documentId,
+      fieldPath: fieldPath,
+      value: synonyms ?? antonyms,
+      isArrayUnion: isArrayUnion,
+      isArrayRemove: isArrayRemove,
+    );
+    final updatedWord =
+        _currentWord.details?.copyWith(antonyms: antonyms, synonyms: synonyms);
+    if (updatedWord != _currentWord.details) {
+      _updateWordData(_currentWord.copyWith(details: updatedWord));
+      notifyListeners();
+    }
+  }
+
+  Future<void> updateTheWord(Word word) async {
+    await _controller.updateWord(word);
+  }
 
   // Handle the navigation based on the step
   void _handleNavigation({required bool isForward}) {
@@ -106,10 +148,8 @@ class FormStateProvider with ChangeNotifier {
     if (resetAll) {
       _state = WordFormState();
     } else {
-      _state = _state.copyWith(
-        currentStep: 0,
-        wordDetails: null,
-      );
+      _state =
+          _state.copyWith(currentStep: 0, wordDetails: null, wordData: null);
     }
     notifyListeners();
   }

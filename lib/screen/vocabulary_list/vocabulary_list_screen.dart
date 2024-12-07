@@ -220,7 +220,7 @@ class _VocabularyListScreenState extends State<VocabularyListScreen>
   }
 
   Widget _buildWordsList(BuildContext context) {
-    print('buildlisttest');
+    print('buildlist');
     return Consumer2<WordProvider, FilterProvider>(
       builder: (context, wordProvider, filterProvider, child) {
         final selectedFilter = filterProvider.filters.entries

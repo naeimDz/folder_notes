@@ -78,6 +78,7 @@ class _AddWordScreenState extends State<AddWordScreen> {
                 final newWord = context.read<FormStateProvider>().getWordData();
                 context.read<WordProvider>().addWord(newWord!);
                 context.read<MetadataProvider>().updateWordCount();
+                context.read<FormStateProvider>().reset();
                 Navigator.pushNamed(context, "/home");
               } else {
                 provider.navigateForward();

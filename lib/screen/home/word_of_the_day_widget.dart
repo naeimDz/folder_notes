@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../models/word.dart';
+import '../../providers/form_state_provider.dart';
 import '../../providers/word_provider.dart';
 import '../shared/widgets/custom_chip.dart';
 
@@ -11,13 +13,9 @@ class WordOfTheDayWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<WordProvider>(
-      builder: (context, wordProvider, _) {
-        if (wordProvider.isLoading) {
-          return Center(child: CircularProgressIndicator());
-        }
-
-        final word = wordProvider.wordOfTheDay;
+    return Selector<WordProvider, Word?>(
+      selector: (_, provider) => provider.wordOfTheDay,
+      builder: (context, word, _) {
         if (word == null) {
           return Center(child: Text('No word of the day found'));
         }
@@ -39,11 +37,9 @@ class WordOfTheDayWidget extends StatelessWidget {
             child: InkWell(
               onTap: () {
                 // Set the selected word in the provider
-                Provider.of<WordProvider>(context, listen: false)
-                    .selectWord(word);
+                context.read<FormStateProvider>().selectWord(word);
                 Navigator.of(context).pushNamed(
                   "/word-details",
-                  arguments: word,
                 );
               },
               borderRadius: BorderRadius.circular(20),

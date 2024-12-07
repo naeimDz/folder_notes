@@ -5,7 +5,7 @@ import '../controller/metadata_controller.dart';
 class MetadataProvider extends ChangeNotifier {
   final MetadataController _controller = MetadataController();
 
-  int _wordCount = 3;
+  int _wordCount = 0;
   bool _isLoading = false;
   String? _error;
 

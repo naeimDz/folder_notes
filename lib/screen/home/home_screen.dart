@@ -3,12 +3,14 @@ import 'package:my_lab/models/word.dart';
 import 'package:my_lab/screen/home/word_of_the_day_widget.dart';
 import 'package:my_lab/screen/shared/widgets/custom_sliver_app_bar.dart';
 import 'package:provider/provider.dart';
+import '../../providers/form_state_provider.dart';
 import '../../providers/metadata_provider.dart';
 import '../../providers/theme_provider.dart';
 import '../../providers/word_provider.dart';
 import '../advanced_features/analytics_screen.dart';
 import '../advanced_features/categories_screen.dart';
 import '../advanced_features/space_practice.dart';
+import '../advanced_features/test.dart';
 import '../vocabulary_list/vocabulary_list_screen.dart';
 import 'dart:ui' as ui;
 
@@ -25,27 +27,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   final int dailyGoal = 80;
   late AnimationController _progressController;
   late Animation<double> _progressAnimation;
-
-  final List<Map<String, String>> todaysWords = [
-    {
-      "word": "Resilient",
-      "translation": "مرن",
-      "timeAdded": "2h ago",
-      "difficulty": "Medium"
-    },
-    {
-      "word": "Ambitious",
-      "translation": "طموح",
-      "timeAdded": "3h ago",
-      "difficulty": "Hard"
-    },
-    {
-      "word": "Genuine",
-      "translation": "حقيقي",
-      "timeAdded": "5h ago",
-      "difficulty": "Easy"
-    }
-  ];
+  // PageController for managing PageView
+  late PageController _pageController;
+  // ignore: unused_field
+  int _currentIndex = 0;
 
   final List<Map<String, dynamic>> recentActivity = [
     {
@@ -71,10 +56,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    final wordProvider = Provider.of<WordProvider>(context, listen: false);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      wordProvider.fetchWordOfTheDay(); // Pass the word document ID here
-    });
+    _pageController = PageController();
     _progressController = AnimationController(
       duration: const Duration(milliseconds: 1500),
       vsync: this,
@@ -92,6 +74,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   void dispose() {
     _progressController.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
@@ -99,49 +82,65 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDark = themeProvider.getThemeMode() == ThemeMode.dark;
-
+    print("build home screen");
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          CustomSliverAppBar(
-            title: widget.title,
-            actions: [
-              IconButton(
-                icon: Icon(Icons.add),
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => CategoriesScreen()),
+      // floatingActionButton: _buildFloatingActionButton(context),
+      body: PageView(
+          controller: _pageController,
+          physics:
+              const NeverScrollableScrollPhysics(), // Disable swipe if needed
+          children: [
+            CustomScrollView(
+              slivers: [
+                CustomSliverAppBar(
+                  title: widget.title,
+                  actions: [
+                    IconButton(
+                      icon: Icon(Icons.add),
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SliverExampleApp()),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildWelcomeHeader(),
-                  SizedBox(height: 24),
-                  _buildAnimatedProgress(context),
-                  SizedBox(height: 24),
-                  _buildEnhancedStats(context),
-                  SizedBox(height: 24),
-                  WordOfTheDayWidget(),
-                  SizedBox(height: 24),
-                  _buildTodaysWords(isDark),
-                  SizedBox(height: 24),
-                  _buildRecentActivityTimeline(isDark),
-                  SizedBox(height: 24),
-                  _buildQuickActionCards(context, isDark),
-                  SizedBox(height: 32),
-                ],
-              ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildWelcomeHeader(),
+                        SizedBox(height: 24),
+                        _buildAnimatedProgress(context),
+                        SizedBox(height: 24),
+                        _buildEnhancedStats(context),
+                        SizedBox(height: 24),
+                        WordOfTheDayWidget(),
+                        SizedBox(height: 24),
+                        _buildTodaysWords(isDark),
+                        SizedBox(height: 24),
+                        _buildRecentActivityTimeline(isDark),
+                        SizedBox(height: 24),
+                        _buildQuickActionCards(context, isDark),
+                        SizedBox(height: 32),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
-      bottomNavigationBar: _buildGlassBottomNav(isDark),
+            VocabularyListScreen(),
+            //  AddWordScreen(),
+            Center(child: Text('Profile Page')),
+          ]),
+      bottomNavigationBar: _buildGlassBottomNav(isDark, (index) {
+        setState(() {
+          _currentIndex = index;
+        });
+        _pageController.jumpToPage(index);
+      }),
     );
   }
 
@@ -252,16 +251,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: [
-          Consumer<MetadataProvider>(builder: (context, provider, child) {
-            return _buildStatCard(
-              "Words Mastered",
-              provider.wordCount.toString(),
-              Icons.auto_awesome,
-              [Colors.purple[400]!, Colors.purple[600]!],
-              context,
-            );
-          }),
+          Selector<MetadataProvider, int?>(
+              selector: (_, provider) => provider.wordCount,
+              builder: (context, wordCount, child) {
+                return _buildStatCard(
+                  '/word-list',
+                  "Words Mastered",
+                  wordCount.toString(),
+                  Icons.auto_awesome,
+                  [Colors.purple[400]!, Colors.purple[600]!],
+                  context,
+                );
+              }),
           _buildStatCard(
+            "/progress",
             "Current Streak",
             "7 days",
             Icons.local_fire_department,
@@ -269,6 +272,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             context,
           ),
           _buildStatCard(
+            "/analyse",
             "Time Studied",
             "2.5 hrs",
             Icons.timer,
@@ -280,8 +284,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildStatCard(String title, String value, IconData icon,
-      List<Color> gradientColors, BuildContext context) {
+  Widget _buildStatCard(String nextScreen, String title, String value,
+      IconData icon, List<Color> gradientColors, BuildContext context) {
     return Container(
       width: 160,
       margin: EdgeInsets.only(right: 16),
@@ -303,10 +307,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => VocabularyListScreen()),
-          ),
+          onTap: () => Navigator.pushNamed(context, nextScreen),
           borderRadius: BorderRadius.circular(20),
           child: Padding(
             padding: EdgeInsets.all(20),
@@ -340,25 +341,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildTodaysWords(bool isDark) {
-    return Consumer<WordProvider>(
-      builder: (context, provider, child) {
-        // Check if the data is still loading
-        if (provider.isLoading) {
-          return Center(child: CircularProgressIndicator());
-        }
-
-        // Check for any errors during data loading
-        if (provider.error != null) {
-          return Center(
-            child: Text(
-              'Error loading words: ${provider.error}',
-              style: TextStyle(color: Colors.red),
-            ),
-          );
-        }
-
+    return Selector<WordProvider, List<Word>>(
+      selector: (_, provider) => provider.todaysWords,
+      builder: (context, todaysWords, child) {
         // If there are no words for today, show an empty message
-        if (provider.todaysWords.isEmpty) {
+        if (todaysWords.isEmpty) {
           return Center(
             child: Text(
               "No words available for today",
@@ -374,16 +361,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Today's Words",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: isDark ? Colors.white : Colors.black,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Text(
+                "Today's Words",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? Colors.white : Colors.black,
+                ),
               ),
             ),
-            SizedBox(height: 16),
-            ...provider.todaysWords.map((word) => _buildWordCard(word, isDark)),
+            ...todaysWords.map((word) => _buildWordCard(word, isDark)),
           ],
         );
       },
@@ -428,7 +417,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           borderRadius: BorderRadius.circular(15),
           onTap: () {
             // Set the selected word in the provider
-            Provider.of<WordProvider>(context, listen: false).selectWord(word);
+            context.read<FormStateProvider>().selectWord(word);
             Navigator.pushNamed(context, "/word-details");
           },
           child: Padding(
@@ -719,7 +708,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildGlassBottomNav(bool isDark) {
+  Widget _buildGlassBottomNav(bool isDark, void Function(int)? onTap) {
     return Container(
       decoration: BoxDecoration(
         color: isDark
@@ -747,11 +736,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
               BottomNavigationBarItem(
                   icon: Icon(Icons.book), label: 'Dictionary'),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.psychology), label: 'Practice'),
+              //   BottomNavigationBarItem(icon: Icon(Icons.add), label: 'Add Word'),
               BottomNavigationBarItem(
                   icon: Icon(Icons.person), label: 'Profile'),
             ],
+            onTap: onTap,
           ),
         ),
       ),

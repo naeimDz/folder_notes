@@ -19,7 +19,6 @@ class WordRelationsWidget extends StatelessWidget {
       {bool isArrayUnion = true}) {
     final fieldPath =
         type == 'Synonym' ? 'details.synonyms' : 'details.antonyms';
-
     provider.updateField(
       documentId: word.id!,
       fieldPath: fieldPath,
@@ -159,7 +158,7 @@ class WordRelationsWidget extends StatelessWidget {
             children: words.map((word) {
               return _buildWordChip(
                 onRemove: () {
-                  print(word);
+                  print(title.substring(0, 7));
                 },
                 text: word,
                 backgroundColor: chipColor,

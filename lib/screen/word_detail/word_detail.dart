@@ -4,6 +4,7 @@ import 'package:my_lab/screen/word_detail/learning_progress_widget.dart';
 import 'package:my_lab/screen/word_detail/word_relations_widget.dart';
 import 'package:provider/provider.dart';
 
+import '../../providers/form_state_provider.dart';
 import '../../providers/word_provider.dart';
 
 class WordDetailScreen extends StatefulWidget {
@@ -15,8 +16,6 @@ class WordDetailScreen extends StatefulWidget {
 
 class _WordDetailScreenState extends State<WordDetailScreen>
     with SingleTickerProviderStateMixin {
-  bool isBookmarked = false;
-  bool showFullDefinition = false;
   late AnimationController _controller;
 
   @override
@@ -131,8 +130,11 @@ class _WordDetailScreenState extends State<WordDetailScreen>
   @override
   Widget build(BuildContext context) {
     print("build WordDetailScreen //");
-    final word = Provider.of<WordProvider>(context, listen: false).selectedWord;
+    final word =
+        Provider.of<FormStateProvider>(context, listen: false).state.wordData;
 
+    //context.read<FormStateProvider>().selectWord(word);
+    // print(context.read<FormStateProvider>().state.wordData);
     if (word == null) {
       return Scaffold(
         body: _buildErrorPlaceholder(

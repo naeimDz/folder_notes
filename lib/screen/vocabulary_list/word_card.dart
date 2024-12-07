@@ -4,7 +4,7 @@ import 'package:my_lab/models/word_card_config.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/word.dart';
-import '../../providers/word_provider.dart';
+import '../../providers/form_state_provider.dart';
 
 class WordCard extends StatelessWidget {
   final Word word;
@@ -122,12 +122,10 @@ class WordCard extends StatelessWidget {
           child: InkWell(
             onTap: () {
               // Set the selected word in the provider
-              Provider.of<WordProvider>(context, listen: false)
-                  .selectWord(word);
+              context.read<FormStateProvider>().selectWord(word);
               Navigator.pushNamed(
                 context,
                 '/word-details',
-                arguments: word,
               );
             },
             child: Hero(
