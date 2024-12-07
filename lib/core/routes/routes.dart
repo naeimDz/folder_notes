@@ -15,10 +15,9 @@ class AppRoutes {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       case initial:
-        return MaterialPageRoute(
-            builder: (_) => HomeScreen(title: 'مرحباً، Naeim!'));
+        return MaterialPageRoute(builder: (_) => HomeScreen());
       case home:
-        return MaterialPageRoute(builder: (_) => HomeScreen(title: 'مرحباً،'));
+        return MaterialPageRoute(builder: (_) => HomeScreen());
       case "/add-word":
         return MaterialPageRoute(builder: (_) => AddWordScreen());
       case "/word-details":

@@ -79,7 +79,7 @@ class _AddWordScreenState extends State<AddWordScreen> {
                 context.read<WordProvider>().addWord(newWord!);
                 context.read<MetadataProvider>().updateWordCount();
                 context.read<FormStateProvider>().reset();
-                Navigator.pushNamed(context, "/home");
+                Navigator.popAndPushNamed(context, "/home");
               } else {
                 provider.navigateForward();
                 _navigateToPage(provider.state.currentStep);
@@ -131,11 +131,41 @@ class _AddWordScreenState extends State<AddWordScreen> {
   CustomSliverAppBar _buildAppBar(BuildContext context) {
     final theme = Theme.of(context);
     return CustomSliverAppBar(
+      leadingIcon: Icons.arrow_back,
+      onLeadingIconPressed: () async {
+        final bool? confirmDiscard = await _showConfirmationDialog(context);
+        if (confirmDiscard == true && context.mounted) {
+          Navigator.popAndPushNamed(context, "/home"); // Navigate back to home
+        }
+      },
       gradientColors: [
         theme.colorScheme.primary,
         theme.colorScheme.primaryContainer,
       ],
       title: "Add New Word",
+    );
+  }
+
+  /// Shows a confirmation dialog to discard changes
+  Future<bool?> _showConfirmationDialog(BuildContext context) {
+    return showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Discard Changes?'),
+          content: Text('Are you sure you want to discard all changes?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false), // Cancel
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true), // Confirm discard
+              child: Text('Discard'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

@@ -100,7 +100,6 @@ class _VocabularyListScreenState extends State<VocabularyListScreen>
             ),
         ],
       ),
-      floatingActionButton: _buildFloatingActionButton(context),
     );
   }
 
@@ -318,26 +317,6 @@ class _VocabularyListScreenState extends State<VocabularyListScreen>
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildFloatingActionButton(BuildContext context) {
-    return ScaleTransition(
-      scale: Tween<double>(begin: 1.0, end: 1.1).animate(
-        CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
-      ),
-      child: FloatingActionButton.extended(
-        onPressed: () {
-          _animationController
-              .forward()
-              .then((_) => _animationController.reverse());
-          Navigator.pushNamed(context, '/add-word');
-        },
-        icon: Icon(Icons.add),
-        label: Text('Add Word'),
-        elevation: 4,
-        backgroundColor: Colors.blue[600],
       ),
     );
   }

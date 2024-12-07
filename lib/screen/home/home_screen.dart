@@ -1,22 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:my_lab/models/word.dart';
 import 'package:my_lab/screen/home/word_of_the_day_widget.dart';
+import 'package:my_lab/screen/shared/widgets/custom_fab.dart';
 import 'package:my_lab/screen/shared/widgets/custom_sliver_app_bar.dart';
 import 'package:provider/provider.dart';
 import '../../providers/form_state_provider.dart';
 import '../../providers/metadata_provider.dart';
-import '../../providers/theme_provider.dart';
 import '../../providers/word_provider.dart';
 import '../advanced_features/analytics_screen.dart';
 import '../advanced_features/categories_screen.dart';
 import '../advanced_features/space_practice.dart';
-import '../advanced_features/test.dart';
 import '../vocabulary_list/vocabulary_list_screen.dart';
 import 'dart:ui' as ui;
 
 class HomeScreen extends StatefulWidget {
-  final String title;
-  const HomeScreen({super.key, required this.title});
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -80,11 +78,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
-    final isDark = themeProvider.getThemeMode() == ThemeMode.dark;
     print("build home screen");
     return Scaffold(
-      // floatingActionButton: _buildFloatingActionButton(context),
+      floatingActionButton: (_currentIndex == 2)
+          ? null // Hide FAB
+          : CustomFloatingActionButton(
+              onPressed: () =>
+                  Navigator.pushReplacementNamed(context, '/add-word'),
+            ),
       body: PageView(
           controller: _pageController,
           physics:
@@ -93,17 +94,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             CustomScrollView(
               slivers: [
                 CustomSliverAppBar(
-                  title: widget.title,
-                  actions: [
-                    IconButton(
-                      icon: Icon(Icons.add),
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => SliverExampleApp()),
-                      ),
-                    ),
-                  ],
+                  title: 'مرحباً، Naeim!',
+                  actions: [],
                 ),
                 SliverToBoxAdapter(
                   child: Padding(
@@ -119,11 +111,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         SizedBox(height: 24),
                         WordOfTheDayWidget(),
                         SizedBox(height: 24),
-                        _buildTodaysWords(isDark),
+                        _buildTodaysWords(),
                         SizedBox(height: 24),
-                        _buildRecentActivityTimeline(isDark),
+                        _buildRecentActivityTimeline(),
                         SizedBox(height: 24),
-                        _buildQuickActionCards(context, isDark),
+                        _buildQuickActionCards(context),
                         SizedBox(height: 32),
                       ],
                     ),
@@ -135,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             //  AddWordScreen(),
             Center(child: Text('Profile Page')),
           ]),
-      bottomNavigationBar: _buildGlassBottomNav(isDark, (index) {
+      bottomNavigationBar: _buildGlassBottomNav((index) {
         setState(() {
           _currentIndex = index;
         });
@@ -340,7 +332,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildTodaysWords(bool isDark) {
+  Widget _buildTodaysWords({bool isDark = false}) {
     return Selector<WordProvider, List<Word>>(
       selector: (_, provider) => provider.todaysWords,
       builder: (context, todaysWords, child) {
@@ -372,14 +364,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ),
               ),
             ),
-            ...todaysWords.map((word) => _buildWordCard(word, isDark)),
+            ...todaysWords.map((word) => _buildWordCard(word)),
           ],
         );
       },
     );
   }
 
-  Widget _buildWordCard(Word word, bool isDark) {
+  Widget _buildWordCard(Word word, {bool isDark = false}) {
     Color difficultyColor;
     switch (word.difficulty.name) {
       case 'beginner':
@@ -501,7 +493,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildRecentActivityTimeline(bool isDark) {
+  Widget _buildRecentActivityTimeline({bool isDark = false}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -590,7 +582,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildQuickActionCards(BuildContext context, bool isDark) {
+  Widget _buildQuickActionCards(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -708,7 +700,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildGlassBottomNav(bool isDark, void Function(int)? onTap) {
+  Widget _buildGlassBottomNav(void Function(int)? onTap,
+      {bool isDark = false}) {
     return Container(
       decoration: BoxDecoration(
         color: isDark
@@ -726,7 +719,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         child: BackdropFilter(
           filter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
           child: BottomNavigationBar(
-            currentIndex: 0,
+            currentIndex: _currentIndex,
             backgroundColor: Colors.transparent,
             elevation: 0,
             type: BottomNavigationBarType.fixed,
