@@ -110,7 +110,6 @@ class WordProvider with ChangeNotifier {
     bool isArrayUnion = false,
     bool isArrayRemove = false,
   }) async {
-    setLoading(true);
     try {
       await _controller.updateField(
         documentId: documentId,
@@ -122,9 +121,7 @@ class WordProvider with ChangeNotifier {
       notifyListeners();
     } catch (e) {
       _setError(e.toString());
-    } finally {
-      setLoading(false);
-    }
+    } finally {}
   }
 
 // Toggle favorite status

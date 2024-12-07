@@ -15,8 +15,8 @@ class WordRelationsWidget extends StatelessWidget {
     this.synonyms,
     this.antonyms,
   });
-  void handleAddWord(String theWord, String type, WordProvider provider,
-      {bool isArrayUnion = true}) {
+  void handleModifyWord(String theWord, String type, WordProvider provider,
+      {bool isArrayUnion = true, isArrayRemove = false}) {
     final fieldPath =
         type == 'Synonym' ? 'details.synonyms' : 'details.antonyms';
     provider.updateField(
@@ -24,6 +24,7 @@ class WordRelationsWidget extends StatelessWidget {
       fieldPath: fieldPath,
       value: theWord,
       isArrayUnion: isArrayUnion,
+      isArrayRemove: isArrayRemove,
     );
   }
 
@@ -43,7 +44,7 @@ class WordRelationsWidget extends StatelessWidget {
         WordInput(
           isVisible: provider.isLoading,
           onSave: (word, type) {
-            handleAddWord(word, type, provider);
+            handleModifyWord(word, type, provider);
           },
           onHide: () {},
         ),
@@ -158,7 +159,13 @@ class WordRelationsWidget extends StatelessWidget {
             children: words.map((word) {
               return _buildWordChip(
                 onRemove: () {
-                  print(title.substring(0, 7));
+                  final provider = context.read<WordProvider>();
+                  handleModifyWord(
+                      word,
+                      title.substring(0, 7), // Either "Synonym" or "Antonym"
+                      provider,
+                      isArrayUnion: false, // Set to false for removal
+                      isArrayRemove: true);
                 },
                 text: word,
                 backgroundColor: chipColor,
